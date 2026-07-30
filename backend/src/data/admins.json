@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "updatedAt": "2026-07-30T13:13:40.366Z",
+  "admins": [
+    {
+      "id": "adm_head_coach",
+      "username": "coach",
+      "displayName": "Head Coach",
+      "role": "staff",
+      "passwordHash": "scrypt$16384$8$1$9TSD+tzM+0OGIBdZcWHl6Q==$D+F8SLjJNeXOLTLm7RXr/2+RkIg5MHAgdrhTaav+DpCTiShuMcGdyVg6syn4Q4P/uebieZOTbWMbDOiLvcpBzw==",
+      "createdAt": "2026-07-30T13:13:40.366Z",
+      "lastLoginAt": null
+    },
+    {
+      "id": "adm_front_desk",
+      "username": "frontdesk",
+      "displayName": "Front Desk",
+      "role": "staff",
+      "passwordHash": "scrypt$16384$8$1$e065aMWwND1hJVd0D9TuTg==$Wt9T35WaPJ8vzwiE1Z4bRU1B+SDZ//0T/vvZNR8fY1GVxeF23px07SJ1wopu6STgIA7kNgTCuYKTp8T1G4G83A==",
+      "createdAt": "2026-07-30T13:13:40.366Z",
+      "lastLoginAt": null
+    }
+  ]
+}

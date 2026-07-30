@@ -1,0 +1,29 @@
+{
+  "name": "elever-performance-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Elever Performance Lab — futuristic gym kiosk (Next.js frontend + Express/JSON backend)",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c cyan,magenta \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace frontend",
+    "start": "concurrently -n backend,frontend -c cyan,magenta \"npm:start:backend\" \"npm:start:frontend\"",
+    "start:backend": "npm run start --workspace backend",
+    "start:frontend": "npm run start --workspace frontend",
+    "seed": "npm run seed --workspace backend",
+    "lint": "npm run lint --workspace frontend",
+    "typecheck": "npm run typecheck --workspace frontend",
+    "smoke": "node backend/scripts/smoke.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

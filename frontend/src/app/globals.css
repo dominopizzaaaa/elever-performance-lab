@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Theme tokens. `--accent-rgb` is re-bound per member (see KioskShell) so the
+   whole interface re-tints without swapping any class names.
+   --------------------------------------------------------------------------- */
+@layer base {
+  :root {
+    --accent-rgb: 61 240 255; /* neon cyan */
+    --grid-size: 44px;
+  }
+
+  [data-accent='cyan'] {
+    --accent-rgb: 61 240 255;
+  }
+  [data-accent='lime'] {
+    --accent-rgb: 182 255 60;
+  }
+  [data-accent='magenta'] {
+    --accent-rgb: 255 68 200;
+  }
+  [data-accent='violet'] {
+    --accent-rgb: 160 107 255;
+  }
+  [data-accent='amber'] {
+    --accent-rgb: 255 182 60;
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-void-900 text-white/85 antialiased;
+    font-feature-settings: 'tnum' 1, 'cv02' 1;
+    overflow-x: hidden;
+  }
+
+  /* Kiosk hygiene: no text selection or overscroll bounce on a wall screen. */
+  body[data-kiosk='true'] {
+    overscroll-behavior: none;
+  }
+
+  ::selection {
+    background: rgb(var(--accent-rgb) / 0.3);
+    color: white;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(255 255 255 / 0.03);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--accent-rgb) / 0.28);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--accent-rgb) / 0.45);
+  }
+
+  /* Numeric inputs: hide spinners, the kiosk uses its own steppers. */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent-rgb) / 0.75);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* --- Surfaces ----------------------------------------------------------- */
+  .panel {
+    @apply relative rounded-2xl border border-white/[0.07] bg-void-700/50 shadow-inset backdrop-blur-xl;
+  }
+
+  .panel-accent {
+    @apply panel;
+    border-color: rgb(var(--accent-rgb) / 0.22);
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.06),
+      0 0 40px -20px rgb(var(--accent-rgb) / 0.6);
+  }
+
+  /* Hairline that fades from the accent colour — used as a panel top edge. */
+  .edge-glow::before {
+    content: '';
+    @apply pointer-events-none absolute inset-x-6 top-0 h-px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--accent-rgb) / 0.75),
+      transparent
+    );
+  }
+
+  /* --- Typography -------------------------------------------------------- */
+  .hud-label {
+    @apply font-display text-[10px] font-semibold uppercase tracking-[0.3em] text-white/40;
+  }
+
+  /* Numeric readouts use the body sans (Rajdhani) rather than the display face:
+     it is condensed and legible at a glance, which is what a HUD needs. */
+  .hud-value {
+    @apply font-sans text-2xl font-semibold tabular-nums text-white;
+  }
+
+  .neon-text {
+    color: rgb(var(--accent-rgb));
+    text-shadow: 0 0 18px rgb(var(--accent-rgb) / 0.55);
+  }
+
+  /* --- Controls ---------------------------------------------------------- */
+  .field {
+    @apply w-full rounded-xl border border-white/10 bg-void-800/80 px-4 py-3 font-sans text-base
+      text-white placeholder:text-white/25 transition
+      focus:border-transparent focus:outline-none;
+  }
+  .field:focus {
+    box-shadow: 0 0 0 2px rgb(var(--accent-rgb) / 0.55), 0 0 30px -10px rgb(var(--accent-rgb) / 0.6);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04]
+      px-3 py-1 font-display text-[10px] font-semibold uppercase tracking-[0.18em] text-white/60;
+  }
+
+  /* --- Decorative -------------------------------------------------------- */
+  .grid-backdrop {
+    background-image:
+      linear-gradient(rgb(var(--accent-rgb) / 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--accent-rgb) / 0.055) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 75%);
+  }
+
+  .scanlines::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgb(255 255 255 / 0.022) 0px,
+      rgb(255 255 255 / 0.022) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  }
+
+  .corner-brackets::before,
+  .corner-brackets::after {
+    content: '';
+    @apply pointer-events-none absolute h-4 w-4;
+    border-color: rgb(var(--accent-rgb) / 0.5);
+  }
+  .corner-brackets::before {
+    @apply left-2 top-2 border-l border-t;
+  }
+  .corner-brackets::after {
+    @apply bottom-2 right-2 border-b border-r;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Respect a member's reduced-motion preference across every animation. */
+  @media (prefers-reduced-motion: reduce) {
+    .motion-safe-only {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
