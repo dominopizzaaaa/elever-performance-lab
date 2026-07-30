@@ -1,4 +1,4 @@
-import type { MuscleGroupKey } from '@/lib/types';
+import type { Gender, MuscleGroupKey } from '@/lib/types';
 
 /**
  * Geometry for the AI body avatar.
@@ -7,6 +7,9 @@ import type { MuscleGroupKey } from '@/lib/types';
  * hand-tuned silhouette path, which keeps it easy to adjust and impossible to
  * break into an unreadable blob. Shapes are authored for the left half of the
  * body and mirrored about `MIRROR_AXIS`.
+ *
+ * Male and female builds get their own proportions (shoulder width, waist
+ * taper, hip width) so the figure reads as a body, not a unisex mannequin.
  *
  * Keys must match the backend's canonical list.
  * @see backend/src/data/seed/muscleGroups.js
@@ -32,87 +35,85 @@ export interface MuscleRegion {
   posterior?: boolean;
 }
 
-export const MUSCLE_REGIONS: MuscleRegion[] = [
-  {
-    key: 'shoulders',
-    label: 'Shoulders',
-    mirror: true,
-    shapes: [{ type: 'ellipse', cx: 76, cy: 101, rx: 15.5, ry: 14 }],
-  },
-  {
-    key: 'chest',
-    label: 'Chest',
-    mirror: true,
-    shapes: [{ type: 'rect', x: 86, y: 89, w: 21, h: 28, rx: 9 }],
-  },
+/** Strong, lean build: broad shoulders and lats, tapered waist, developed legs. */
+const MALE_REGIONS: MuscleRegion[] = [
+  { key: 'shoulders', label: 'Shoulders', mirror: true, shapes: [{ type: 'ellipse', cx: 78, cy: 100, rx: 16, ry: 14.5 }] },
+  { key: 'chest', label: 'Chest', mirror: true, shapes: [{ type: 'rect', x: 85, y: 88, w: 23, h: 29, rx: 10 }] },
   {
     key: 'back',
     label: 'Back',
     mirror: true,
     posterior: true,
-    shapes: [{ type: 'rect', x: 75, y: 116, w: 13, h: 38, rx: 6, rotate: -6 }],
+    shapes: [{ type: 'rect', x: 73, y: 114, w: 16, h: 40, rx: 7, rotate: -6 }],
   },
-  {
-    key: 'biceps',
-    label: 'Biceps',
-    mirror: true,
-    shapes: [{ type: 'ellipse', cx: 68, cy: 136, rx: 9.5, ry: 19, rotate: 7 }],
-  },
+  { key: 'biceps', label: 'Biceps', mirror: true, shapes: [{ type: 'ellipse', cx: 66, cy: 135, rx: 10, ry: 20, rotate: 8 }] },
   {
     key: 'triceps',
     label: 'Triceps',
     mirror: true,
     posterior: true,
-    shapes: [{ type: 'ellipse', cx: 55, cy: 133, rx: 6.5, ry: 16, rotate: 7 }],
+    shapes: [{ type: 'ellipse', cx: 54, cy: 132, rx: 7, ry: 17, rotate: 8 }],
   },
-  {
-    key: 'forearms',
-    label: 'Forearms',
-    mirror: true,
-    shapes: [{ type: 'ellipse', cx: 58, cy: 180, rx: 8, ry: 22, rotate: 5 }],
-  },
-  {
-    key: 'core',
-    label: 'Core',
-    mirror: false,
-    shapes: [{ type: 'rect', x: 94, y: 120, w: 32, h: 48, rx: 10 }],
-  },
+  { key: 'forearms', label: 'Forearms', mirror: true, shapes: [{ type: 'ellipse', cx: 57, cy: 179, rx: 8.5, ry: 23, rotate: 5 }] },
+  { key: 'core', label: 'Core', mirror: false, shapes: [{ type: 'rect', x: 96, y: 118, w: 28, h: 50, rx: 11 }] },
   {
     key: 'glutes',
     label: 'Glutes',
     mirror: true,
     posterior: true,
-    shapes: [{ type: 'ellipse', cx: 97, cy: 189, rx: 14, ry: 11 }],
+    shapes: [{ type: 'ellipse', cx: 96, cy: 188, rx: 13.5, ry: 11 }],
   },
-  {
-    key: 'quads',
-    label: 'Quads',
-    mirror: true,
-    shapes: [{ type: 'ellipse', cx: 97, cy: 240, rx: 14, ry: 37 }],
-  },
+  { key: 'quads', label: 'Quads', mirror: true, shapes: [{ type: 'ellipse', cx: 96, cy: 239, rx: 15, ry: 38 }] },
   {
     key: 'hamstrings',
     label: 'Hamstrings',
     mirror: true,
     posterior: true,
-    shapes: [{ type: 'rect', x: 79, y: 214, w: 10, h: 48, rx: 5, rotate: -2 }],
+    shapes: [{ type: 'rect', x: 78, y: 213, w: 11, h: 49, rx: 5.5, rotate: -2 }],
   },
-  {
-    key: 'calves',
-    label: 'Calves',
-    mirror: true,
-    shapes: [{ type: 'ellipse', cx: 99, cy: 309, rx: 10.5, ry: 27 }],
-  },
+  { key: 'calves', label: 'Calves', mirror: true, shapes: [{ type: 'ellipse', cx: 98, cy: 308, rx: 11, ry: 28 }] },
 ];
 
-/**
- * Conditioning has no single muscle — it renders as an aura ring around the
- * whole figure instead of a body region.
- */
-export const AURA_GROUP: MuscleGroupKey = 'conditioning';
+/** Lean, athletic build: narrower shoulders, defined waist, wider hip line. */
+const FEMALE_REGIONS: MuscleRegion[] = [
+  { key: 'shoulders', label: 'Shoulders', mirror: true, shapes: [{ type: 'ellipse', cx: 82, cy: 100, rx: 13, ry: 13 }] },
+  { key: 'chest', label: 'Chest', mirror: true, shapes: [{ type: 'rect', x: 89, y: 90, w: 18, h: 24, rx: 9 }] },
+  {
+    key: 'back',
+    label: 'Back',
+    mirror: true,
+    posterior: true,
+    shapes: [{ type: 'rect', x: 79, y: 116, w: 11, h: 36, rx: 6, rotate: -6 }],
+  },
+  { key: 'biceps', label: 'Biceps', mirror: true, shapes: [{ type: 'ellipse', cx: 73, cy: 135, rx: 7.5, ry: 17, rotate: 7 }] },
+  {
+    key: 'triceps',
+    label: 'Triceps',
+    mirror: true,
+    posterior: true,
+    shapes: [{ type: 'ellipse', cx: 62, cy: 132, rx: 5, ry: 14, rotate: 7 }],
+  },
+  { key: 'forearms', label: 'Forearms', mirror: true, shapes: [{ type: 'ellipse', cx: 64, cy: 178, rx: 6.5, ry: 20, rotate: 5 }] },
+  { key: 'core', label: 'Core', mirror: false, shapes: [{ type: 'rect', x: 100, y: 120, w: 20, h: 46, rx: 10 }] },
+  {
+    key: 'glutes',
+    label: 'Glutes',
+    mirror: true,
+    posterior: true,
+    shapes: [{ type: 'ellipse', cx: 92, cy: 190, rx: 18, ry: 14 }],
+  },
+  { key: 'quads', label: 'Quads', mirror: true, shapes: [{ type: 'ellipse', cx: 93, cy: 240, rx: 15.5, ry: 36 }] },
+  {
+    key: 'hamstrings',
+    label: 'Hamstrings',
+    mirror: true,
+    posterior: true,
+    shapes: [{ type: 'rect', x: 76, y: 214, w: 12, h: 48, rx: 6, rotate: -2 }],
+  },
+  { key: 'calves', label: 'Calves', mirror: true, shapes: [{ type: 'ellipse', cx: 96, cy: 308, rx: 9.5, ry: 26 }] },
+];
 
-/** Static frame parts (not load-mapped): head, neck, shins, feet. */
-export const FRAME_SHAPES: Shape[] = [
+const MALE_FRAME: Shape[] = [
   { type: 'ellipse', cx: 110, cy: 47, rx: 18.5, ry: 22 },
   { type: 'rect', x: 101, y: 66, w: 18, h: 16, rx: 7 },
   // Shins
@@ -122,6 +123,33 @@ export const FRAME_SHAPES: Shape[] = [
   { type: 'rect', x: 90, y: 380, w: 18, h: 9, rx: 4 },
   { type: 'rect', x: 112, y: 380, w: 18, h: 9, rx: 4 },
 ];
+
+const FEMALE_FRAME: Shape[] = [
+  { type: 'ellipse', cx: 110, cy: 47, rx: 17, ry: 20.5 },
+  { type: 'rect', x: 102.5, y: 65, w: 15, h: 16, rx: 6.5 },
+  // Shins
+  { type: 'rect', x: 95, y: 336, w: 10, h: 44, rx: 5 },
+  { type: 'rect', x: 115, y: 336, w: 10, h: 44, rx: 5 },
+  // Feet
+  { type: 'rect', x: 91, y: 380, w: 17, h: 9, rx: 4 },
+  { type: 'rect', x: 112, y: 380, w: 17, h: 9, rx: 4 },
+];
+
+/** Muscle regions for the given build. */
+export function getMuscleRegions(gender: Gender): MuscleRegion[] {
+  return gender === 'female' ? FEMALE_REGIONS : MALE_REGIONS;
+}
+
+/** Static frame parts (not load-mapped): head, neck, shins, feet. */
+export function getFrameShapes(gender: Gender): Shape[] {
+  return gender === 'female' ? FEMALE_FRAME : MALE_FRAME;
+}
+
+/**
+ * Conditioning has no single muscle — it renders as an aura ring around the
+ * whole figure instead of a body region.
+ */
+export const AURA_GROUP: MuscleGroupKey = 'conditioning';
 
 /** Mirrors a shape about the vertical centre line. */
 export function mirrorShape(shape: Shape): Shape {

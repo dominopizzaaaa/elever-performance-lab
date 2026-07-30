@@ -1,13 +1,13 @@
 'use client';
 
 import { useId, useMemo } from 'react';
-import type { MuscleGroupKey } from '@/lib/types';
+import type { Gender, MuscleGroupKey } from '@/lib/types';
 import { cx } from '@/lib/format';
 import {
   AURA_GROUP,
   CANVAS,
-  FRAME_SHAPES,
-  MUSCLE_REGIONS,
+  getFrameShapes,
+  getMuscleRegions,
   mirrorShape,
   shapeTransform,
   type Shape,
@@ -18,6 +18,11 @@ interface AiBodyAvatarProps {
   muscleLoad: Partial<Record<MuscleGroupKey, number>>;
   /** Groups trained in today's session — these pulse. */
   activeGroups?: MuscleGroupKey[];
+  /** Shapes the figure's build. Defaults to a male build. */
+  gender?: Gender;
+  /** Shown as a readout under the figure when provided. */
+  heightCm?: number | null;
+  weightKg?: number | null;
   className?: string;
   /** Renders the intensity legend under the figure. */
   showLegend?: boolean;
@@ -63,23 +68,35 @@ function renderShape(shape: Shape, key: string, className: string, style?: React
  * lateral bands (a front-facing figure can't show them) and conditioning work
  * drives the aura ring instead of a body part.
  */
-export function AiBodyAvatar({ muscleLoad, activeGroups = [], className, showLegend = true }: AiBodyAvatarProps) {
+export function AiBodyAvatar({
+  muscleLoad,
+  activeGroups = [],
+  gender = 'male',
+  heightCm,
+  weightKg,
+  className,
+  showLegend = true,
+}: AiBodyAvatarProps) {
   const uid = useId().replace(/:/g, '');
   const active = useMemo(() => new Set(activeGroups), [activeGroups]);
+
+  const muscleRegions = useMemo(() => getMuscleRegions(gender), [gender]);
+  const frameShapes = useMemo(() => getFrameShapes(gender), [gender]);
 
   const auraIntensity = muscleLoad[AURA_GROUP] ?? 0;
 
   const legend = useMemo(
     () =>
-      MUSCLE_REGIONS.map((region) => ({
-        key: region.key,
-        label: region.label,
-        intensity: muscleLoad[region.key] ?? 0,
-        posterior: region.posterior ?? false,
-      }))
+      muscleRegions
+        .map((region) => ({
+          key: region.key,
+          label: region.label,
+          intensity: muscleLoad[region.key] ?? 0,
+          posterior: region.posterior ?? false,
+        }))
         .sort((a, b) => b.intensity - a.intensity)
         .slice(0, 6),
-    [muscleLoad],
+    [muscleRegions, muscleLoad],
   );
 
   return (
@@ -141,12 +158,12 @@ export function AiBodyAvatar({ muscleLoad, activeGroups = [], className, showLeg
 
           {/* Static frame: head, neck, shins, feet */}
           <g fill={`url(#${uid}-core)`} stroke="rgb(var(--accent-rgb))" strokeOpacity={0.35} strokeWidth={0.9}>
-            {FRAME_SHAPES.map((shape, index) => renderShape(shape, `frame-${index}`, ''))}
+            {frameShapes.map((shape, index) => renderShape(shape, `frame-${index}`, ''))}
           </g>
 
           {/* Load-mapped muscle regions */}
           <g clipPath={`url(#${uid}-clip)`}>
-            {MUSCLE_REGIONS.map((region) => {
+            {muscleRegions.map((region) => {
               const intensity = Math.max(0, Math.min(1, muscleLoad[region.key] ?? 0));
               const isActive = active.has(region.key);
 
@@ -201,8 +218,20 @@ export function AiBodyAvatar({ muscleLoad, activeGroups = [], className, showLeg
         </svg>
       </div>
 
+      {heightCm || weightKg ? (
+        <div className="mt-1 flex items-center gap-3 font-display text-xs font-semibold uppercase tracking-[0.1em] text-white/60">
+          {heightCm ? <span>{heightCm} cm</span> : null}
+          {heightCm && weightKg ? <span className="text-white/20">·</span> : null}
+          {weightKg ? <span>{weightKg} kg</span> : null}
+        </div>
+      ) : null}
+
       {showLegend ? (
-        <div className="mt-2 grid w-full grid-cols-3 gap-1.5">
+        <>
+          <p className="mt-3 text-center text-xs leading-relaxed text-white/40">
+            Places you&apos;ve trained most over the last 14 days — brighter means more work done.
+          </p>
+          <div className="mt-2 grid w-full grid-cols-3 gap-1.5">
           {legend.map((item) => (
             <div
               key={item.key}
@@ -223,7 +252,8 @@ export function AiBodyAvatar({ muscleLoad, activeGroups = [], className, showLeg
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        </>
       ) : null}
     </div>
   );

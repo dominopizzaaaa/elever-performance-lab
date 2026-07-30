@@ -8,9 +8,8 @@ export function formatNumber(value: number, maximumFractionDigits = 0): string {
   return new Intl.NumberFormat(LOCALE, { maximumFractionDigits }).format(value);
 }
 
-/** Tonnage: 62,400 kg -> "62.4t" above a tonne, otherwise "840 kg". */
+/** Always kg, comma-grouped: 62,400 kg -> "62,400 kg". */
 export function formatVolume(kg: number): string {
-  if (kg >= 1000) return `${(kg / 1000).toFixed(kg >= 10000 ? 0 : 1)}t`;
   return `${formatNumber(kg)} kg`;
 }
 

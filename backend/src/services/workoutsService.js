@@ -64,36 +64,9 @@ export async function getTodaySession(userId) {
 }
 
 /**
- * Suggests which plan day is due, based on weekday first and then on whichever
- * scheduled day has gone longest without being trained.
- * @param {any} user
- */
-export async function suggestPlanDay(user) {
-  const days = user.currentPlan?.days ?? [];
-  if (days.length === 0) return null;
-
-  const weekday = new Date().getDay();
-  const scheduled = days.find((day) => day.weekdays?.includes(weekday));
-  if (scheduled) return scheduled;
-
-  const recent = await workoutsRepository.listSessionsByUser(user.id, { limit: 20 });
-  const lastTrained = new Map();
-  for (const session of recent) {
-    if (session.planDayKey && !lastTrained.has(session.planDayKey)) {
-      lastTrained.set(session.planDayKey, session.date);
-    }
-  }
-
-  return [...days].sort((a, b) => {
-    const dateA = lastTrained.get(a.key) ?? '0000-00-00';
-    const dateB = lastTrained.get(b.key) ?? '0000-00-00';
-    return dateA < dateB ? -1 : dateA > dateB ? 1 : 0;
-  })[0];
-}
-
-/**
- * Creates a session. Defaults to today, and can be pre-filled from a plan day
- * so a member taps once and starts logging against prescribed targets.
+ * Creates a session. Defaults to today. A plan day may be attached so the
+ * session carries its label and focus, but exercises are never pre-filled —
+ * the member picks which day it is and adds their own exercises as they go.
  *
  * @param {string} userId
  * @param {{ date?: string, title?: string, focus?: string, notes?: string, planDayKey?: string | null, fromPlanDay?: string }} input
@@ -112,9 +85,6 @@ export async function createSession(userId, input = {}) {
   if (input.fromPlanDay) {
     planDay = planDays.find((day) => day.key === input.fromPlanDay) ?? null;
     if (!planDay) throw badRequest(`Plan day "${input.fromPlanDay}" is not in ${user.name}'s current plan`);
-  } else if (!input.title && !input.focus) {
-    // No hints at all: fall back to whatever the plan says is due.
-    planDay = await suggestPlanDay(user);
   }
 
   const now = new Date().toISOString();
@@ -124,22 +94,12 @@ export async function createSession(userId, input = {}) {
     date,
     planId: user.currentPlan?.id ?? null,
     planDayKey: input.planDayKey ?? planDay?.key ?? null,
-    title: input.title ?? planDay?.label ?? 'Open Session',
+    title: input.title ?? planDay?.label ?? 'Freestyle Session',
     focus: input.focus ?? planDay?.focus ?? 'General',
     status: 'in_progress',
     notes: input.notes ?? '',
     bodyWeightKg: null,
-    exercises: (planDay?.exercises ?? []).map((exercise) => ({
-      id: createId('ex'),
-      name: exercise.name,
-      muscleGroup: exercise.muscleGroup,
-      targetSets: exercise.targetSets,
-      targetReps: exercise.targetReps,
-      targetWeightKg: exercise.targetWeightKg,
-      notes: '',
-      sets: [],
-      createdAt: now,
-    })),
+    exercises: [],
     startedAt: now,
     completedAt: null,
     createdAt: now,
@@ -148,17 +108,6 @@ export async function createSession(userId, input = {}) {
 
   await workoutsRepository.insertSession(session);
   return decorate(session);
-}
-
-/**
- * Returns today's session, creating one from the plan if it does not exist.
- * The kiosk calls this on scan-in so a member can start logging immediately.
- * @param {string} userId
- */
-export async function ensureTodaySession(userId) {
-  const existing = await getTodaySession(userId);
-  if (existing) return existing;
-  return createSession(userId, {});
 }
 
 /**

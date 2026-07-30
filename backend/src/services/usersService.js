@@ -109,6 +109,7 @@ export async function createUser(input) {
     age: input.age,
     weightKg: input.weightKg,
     heightCm: input.heightCm ?? null,
+    gender: input.gender ?? 'male',
     bodyFatPct: input.bodyFatPct ?? null,
     restingHr: null,
     tier: input.tier ?? 'Core',

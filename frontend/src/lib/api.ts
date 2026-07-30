@@ -137,10 +137,6 @@ export const api = {
   getTodaySession: (userId: string, token: string, signal?: AbortSignal) =>
     request<{ session: WorkoutSession | null }>(`/users/${userId}/sessions/today`, { token, signal }),
 
-  /** Get-or-create today's session, pre-filled from the member's plan. */
-  startTodaySession: (userId: string, token: string) =>
-    request<{ session: WorkoutSession }>(`/users/${userId}/sessions/today`, { method: 'POST', token }),
-
   createSession: (
     userId: string,
     body: { date?: string; title?: string; focus?: string; fromPlanDay?: string },

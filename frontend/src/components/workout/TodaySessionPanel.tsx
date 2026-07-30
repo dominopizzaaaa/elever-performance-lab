@@ -47,17 +47,16 @@ export function TodaySessionPanel({ user, token, session, onSessionChange }: Tod
     });
   }, [nextExerciseId, session]);
 
-  async function handleStart() {
+  async function handleStart(planDayKey: string | null) {
     setIsStarting(true);
     try {
-      const { session: started } = await api.startTodaySession(user.id, token);
-      onSessionChange(started);
-      toast.success(
-        started.title === 'Open Session' ? 'Session started' : `${started.title} loaded`,
-        started.exercises.length > 0
-          ? `${started.exercises.length} exercises pulled from ${user.currentPlan.name}.`
-          : 'Add your first exercise to begin.',
+      const { session: started } = await api.createSession(
+        user.id,
+        planDayKey ? { fromPlanDay: planDayKey } : {},
+        token,
       );
+      onSessionChange(started);
+      toast.success(`${started.title} started`, 'Add your first exercise to begin.');
     } catch (caught) {
       toast.error(caught instanceof ApiError ? caught.message : 'Could not start a session');
     } finally {
@@ -86,21 +85,42 @@ export function TodaySessionPanel({ user, token, session, onSessionChange }: Tod
   }
 
   /* ---------------------------------------------------------------------- */
-  /* No session yet                                                         */
+  /* No session yet — the member picks the day and adds their own exercises */
   /* ---------------------------------------------------------------------- */
   if (!session) {
+    const days = user.currentPlan.days;
     return (
       <Panel accent edge className="p-5">
-        <PanelHeader label="Today" title="Nothing logged yet" />
-        <EmptyState
-          title="Start today's session"
-          detail={`We'll pre-load whichever day of ${user.currentPlan.name} is due, then you can log sets as you go.`}
-          action={
-            <NeonButton size="lg" onClick={handleStart} isLoading={isStarting}>
-              Start training
-            </NeonButton>
-          }
-        />
+        <PanelHeader label="Today" title="What are you training today?" />
+        <p className="mt-1 text-sm text-white/40">
+          Pick a day from your plan, or start a freestyle session and add exercises yourself.
+        </p>
+
+        <div className="mt-4 flex flex-col gap-2">
+          {days.map((day) => (
+            <button
+              key={day.key}
+              type="button"
+              disabled={isStarting}
+              onClick={() => void handleStart(day.key)}
+              className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-3 text-left transition hover:border-accent/50 hover:bg-accent-soft disabled:opacity-40"
+            >
+              <span className="font-display text-sm font-bold uppercase tracking-[0.08em] text-white">
+                {day.label}
+              </span>
+              <span className="text-xs text-white/35">{day.focus}</span>
+            </button>
+          ))}
+
+          <NeonButton
+            variant={days.length > 0 ? 'outline' : 'primary'}
+            size="lg"
+            onClick={() => void handleStart(null)}
+            isLoading={isStarting}
+          >
+            Freestyle session
+          </NeonButton>
+        </div>
       </Panel>
     );
   }

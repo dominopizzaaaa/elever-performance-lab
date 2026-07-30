@@ -122,23 +122,31 @@ async function main() {
     let sessionId = '';
     let createdSession = false;
 
-    await check("POST /api/users/:id/sessions/today creates today's session from the plan", async () => {
+    await check("POST /api/users/:id/sessions creates today's session", async () => {
       const before = await request('GET', `/api/users/${memberId}/sessions/today`, { token: memberToken });
       createdSession = before.body.session === null;
 
-      const { status, body } = await request('POST', `/api/users/${memberId}/sessions/today`, { token: memberToken });
-      assert.equal(status, 201);
-      assert.equal(body.session.date, todayKey());
-      sessionId = body.session.id;
       if (createdSession) {
+        const { status, body } = await request('POST', `/api/users/${memberId}/sessions`, {
+          token: memberToken,
+          body: {},
+        });
+        assert.equal(status, 201);
+        assert.equal(body.session.date, todayKey());
+        sessionId = body.session.id;
         cleanup.push(() => request('DELETE', `/api/sessions/${sessionId}`, { token: memberToken }));
+      } else {
+        sessionId = before.body.session.id;
       }
     });
 
-    await check('POST .../sessions/today is idempotent', async () => {
-      const { status, body } = await request('POST', `/api/users/${memberId}/sessions/today`, { token: memberToken });
-      assert.equal(status, 201);
-      assert.equal(body.session.id, sessionId, 'a second call must not create a duplicate session');
+    await check('POST /api/users/:id/sessions rejects a second session on the same day', async () => {
+      const { status, body } = await request('POST', `/api/users/${memberId}/sessions`, {
+        token: memberToken,
+        body: {},
+      });
+      assert.equal(status, 409);
+      assert.match(body.error.message, /already has a session logged/);
     });
 
     let exerciseId = '';

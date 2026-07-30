@@ -65,18 +65,6 @@ userRoutes.get(
   }),
 );
 
-/**
- * POST /api/users/:userId/sessions/today — get-or-create today's session,
- * pre-filled from the member's plan. Idempotent: safe to call on every scan-in.
- */
-userRoutes.post(
-  '/:userId/sessions/today',
-  requireSelfOrStaff,
-  asyncHandler(async (req, res) => {
-    res.status(201).json({ session: await workoutsService.ensureTodaySession(req.params.userId) });
-  }),
-);
-
 /** POST /api/users/:userId/sessions — create a session explicitly. */
 userRoutes.post(
   '/:userId/sessions',

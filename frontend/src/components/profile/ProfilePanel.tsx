@@ -5,7 +5,7 @@ import { api, ApiError } from '@/lib/api';
 import { useToast } from '@/providers/ToastProvider';
 import { Panel } from '@/components/ui/Panel';
 import { NeonButton } from '@/components/ui/NeonButton';
-import { NumberStepper } from '@/components/ui/Field';
+import { NumberStepper, SelectField } from '@/components/ui/Field';
 import { Badge } from '@/components/ui/Feedback';
 import { formatLongDate, formatWeight } from '@/lib/format';
 import type { User } from '@/lib/types';
@@ -28,6 +28,8 @@ export function ProfilePanel({ user, token, onUpdated }: ProfilePanelProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   const [weight, setWeight] = useState(user.weightKg);
+  const [height, setHeight] = useState(user.heightCm ?? 170);
+  const [gender, setGender] = useState(user.gender);
   const [age, setAge] = useState(user.age);
   const [bodyFat, setBodyFat] = useState(user.bodyFatPct ?? 0);
   const [targetWeight, setTargetWeight] = useState(user.goals.targetWeightKg);
@@ -35,6 +37,8 @@ export function ProfilePanel({ user, token, onUpdated }: ProfilePanelProps) {
 
   function resetForm(source: User) {
     setWeight(source.weightKg);
+    setHeight(source.heightCm ?? 170);
+    setGender(source.gender);
     setAge(source.age);
     setBodyFat(source.bodyFatPct ?? 0);
     setTargetWeight(source.goals.targetWeightKg);
@@ -48,6 +52,8 @@ export function ProfilePanel({ user, token, onUpdated }: ProfilePanelProps) {
         user.id,
         {
           weightKg: weight,
+          heightCm: height,
+          gender,
           age,
           bodyFatPct: bodyFat > 0 ? bodyFat : null,
           goals: { targetWeightKg: targetWeight, weeklySessions },
@@ -105,6 +111,23 @@ export function ProfilePanel({ user, token, onUpdated }: ProfilePanelProps) {
             />
             <NumberStepper label="Age" value={age} onChange={setAge} min={10} max={100} />
             <NumberStepper
+              label="Height"
+              value={height}
+              onChange={setHeight}
+              min={80}
+              max={260}
+              suffix="cm"
+            />
+            <SelectField
+              label="Gender"
+              value={gender}
+              onChange={(event) => setGender(event.target.value as User['gender'])}
+              options={[
+                { value: 'male', label: 'Male' },
+                { value: 'female', label: 'Female' },
+              ]}
+            />
+            <NumberStepper
               label="Body fat"
               value={bodyFat}
               onChange={setBodyFat}
@@ -155,6 +178,7 @@ export function ProfilePanel({ user, token, onUpdated }: ProfilePanelProps) {
             { label: 'Weight', value: formatWeight(user.weightKg) },
             { label: 'Age', value: `${user.age} yrs` },
             { label: 'Height', value: user.heightCm ? `${user.heightCm} cm` : '—' },
+            { label: 'Gender', value: user.gender === 'female' ? 'Female' : 'Male' },
             { label: 'Body fat', value: user.bodyFatPct !== null ? `${user.bodyFatPct}%` : '—' },
             { label: 'Resting HR', value: user.restingHr ? `${user.restingHr} bpm` : '—' },
             { label: 'BMI', value: bmi ? bmi.toFixed(1) : '—' },

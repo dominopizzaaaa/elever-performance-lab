@@ -25,6 +25,8 @@ const rpe = z
 
 const muscleGroup = z.enum(/** @type {[string, ...string[]]} */ (MUSCLE_GROUP_KEYS));
 
+const gender = z.enum(['male', 'female']);
+
 export const scanSchema = z.object({
   name: z
     .string({ required_error: 'Enter your name to scan in' })
@@ -44,6 +46,7 @@ export const updateUserSchema = z
     age: z.number().int().min(10, 'Age must be at least 10').max(100).optional(),
     weightKg: weightKg.optional(),
     heightCm: z.number().min(80).max(260).optional(),
+    gender: gender.optional(),
     bodyFatPct: z.number().min(2).max(60).nullable().optional(),
     restingHr: z.number().int().min(30).max(140).nullable().optional(),
     tagline: z.string().trim().max(140).optional(),
@@ -65,6 +68,7 @@ export const createUserSchema = z.object({
   age: z.number().int().min(10).max(100),
   weightKg,
   heightCm: z.number().min(80).max(260).optional(),
+  gender: gender.optional(),
   bodyFatPct: z.number().min(2).max(60).nullable().optional(),
   tier: z.string().trim().max(40).optional(),
   tagline: z.string().trim().max(140).optional(),

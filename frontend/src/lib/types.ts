@@ -6,6 +6,8 @@
 
 export type AccentColor = 'cyan' | 'magenta' | 'lime' | 'violet' | 'amber';
 
+export type Gender = 'male' | 'female';
+
 export type MuscleGroupKey =
   | 'chest'
   | 'back'
@@ -89,6 +91,7 @@ export interface User {
   age: number;
   weightKg: number;
   heightCm: number | null;
+  gender: Gender;
   bodyFatPct: number | null;
   restingHr: number | null;
   tier: string;
