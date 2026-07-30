@@ -92,7 +92,7 @@ export default function DashboardPage() {
     ];
   }, [session]);
 
-  const weeklyTonnage = useMemo(() => summary?.weekly.map((week) => week.volumeKg) ?? [], [summary]);
+  const weeklyVolume = useMemo(() => summary?.weekly.map((week) => week.volumeKg) ?? [], [summary]);
 
   if (isRestoring || (isLoading && !summary)) {
     return (
@@ -188,17 +188,17 @@ export default function DashboardPage() {
         {/* ---------------------------------------------------------------- */}
         {/* Trailing 8 weeks                                                 */}
         {/* ---------------------------------------------------------------- */}
-        {weeklyTonnage.length > 1 ? (
+        {weeklyVolume.length > 1 ? (
           <Panel className="p-5">
             <div className="flex items-center justify-between gap-4">
               <div className="min-w-0">
                 <p className="hud-label">Trailing 8 weeks</p>
                 <p className="mt-1 text-lg font-semibold tabular-nums text-white">
                   {formatVolume(summary?.totals.volumeKg ?? 0)}
-                  <span className="ml-2 text-xs font-normal text-white/35">total tonnage</span>
+                  <span className="ml-2 text-xs font-normal text-white/35">total weight lifted</span>
                 </p>
               </div>
-              <Sparkline values={weeklyTonnage} width={150} height={38} label="Weekly tonnage trend" />
+              <Sparkline values={weeklyVolume} width={150} height={38} label="Weekly weight lifted trend" />
             </div>
           </Panel>
         ) : null}

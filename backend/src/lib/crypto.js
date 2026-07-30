@@ -44,6 +44,13 @@ export function verifyPassword(password, stored) {
   });
 }
 
+/**
+ * Member kiosk PINs use the same scrypt scheme as staff passwords — a PIN is a
+ * short secret, so it must never be comparable in plaintext.
+ */
+export const hashPin = hashPassword;
+export const verifyPin = verifyPassword;
+
 function base64url(input) {
   return Buffer.from(input).toString('base64url');
 }

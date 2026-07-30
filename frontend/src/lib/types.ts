@@ -83,11 +83,21 @@ export interface Goals {
   focus: string;
 }
 
+/** The little the kiosk knows before a PIN is entered — enough to confirm "is this you?". */
+export interface MemberIdentity {
+  id: string;
+  name: string;
+  memberNumber: string;
+  tier: string;
+}
+
 export interface User {
   id: string;
   name: string;
   slug: string;
   memberNumber: string;
+  /** False for a member staff registered before a PIN was set. */
+  hasPin: boolean;
   age: number;
   weightKg: number;
   heightCm: number | null;

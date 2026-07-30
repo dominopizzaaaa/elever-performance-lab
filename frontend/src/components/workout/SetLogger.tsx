@@ -56,15 +56,15 @@ export function SetLogger({ sessionId, exercise, token, onLogged }: SetLoggerPro
 
       if (result.personalRecord) {
         toast.record(
-          `New PR · ${exercise.name}`,
-          `${formatWeight(result.personalRecord.weightKg)} × ${result.personalRecord.reps} — estimated ${
+          `New personal best · ${exercise.name}`,
+          `${formatWeight(result.personalRecord.weightKg)} × ${result.personalRecord.reps} — an estimated max lift of ${
             result.personalRecord.estimatedOneRepMax
-          } kg max.`,
+          } kg.`,
         );
       } else {
         toast.success(
           `Set ${exercise.sets.length + 1} logged`,
-          `${formatWeight(weight)} × ${reps}${rpe !== null ? ` @ RPE ${rpe}` : ''}`,
+          `${formatWeight(weight)} × ${reps}${rpe !== null ? ` · effort ${rpe}/10` : ''}`,
         );
       }
     } catch (caught) {
@@ -92,9 +92,12 @@ export function SetLogger({ sessionId, exercise, token, onLogged }: SetLoggerPro
         />
       </div>
 
-      {/* RPE is optional — a quick tap scale rather than another stepper. */}
+      {/* Effort is optional — a quick tap scale rather than another stepper. */}
       <div className="mt-3">
-        <p className="hud-label mb-1.5">Effort (RPE) · optional</p>
+        <div className="mb-1.5 flex items-baseline justify-between gap-2">
+          <p className="hud-label">How hard was that set? · optional</p>
+          <p className="text-[10px] text-white/25">1 = easy · 10 = all-out</p>
+        </div>
         <div className="flex flex-wrap gap-1.5">
           {[6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10].map((value) => (
             <button

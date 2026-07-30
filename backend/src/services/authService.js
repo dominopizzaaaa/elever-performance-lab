@@ -1,23 +1,48 @@
 import { env } from '../config/env.js';
-import { createToken, verifyPassword } from '../lib/crypto.js';
+import { createToken, verifyPassword, verifyPin } from '../lib/crypto.js';
 import { forbidden, notFound, unauthorized } from '../lib/errors.js';
 import * as usersRepository from '../repositories/usersRepository.js';
 import * as adminsRepository from '../repositories/adminsRepository.js';
 import { toPublicUser } from './usersService.js';
 
 /**
- * "Card scan" sign-in: a typed name resolves to a hard-coded member.
+ * Step 1 of scan-in: resolve a typed name to the member it belongs to.
  *
- * This is deliberately not a security boundary — it mirrors tapping a gym card
- * on a reader. Anyone standing at the kiosk can scan in as any member; the
- * token it mints only grants access to that member's own training data.
+ * Returns only what the kiosk needs to ask "this is Dominic's profile — is that
+ * you?". Nothing private is exposed until the PIN checks out, and members are
+ * already listed on the scan screen, so confirming a name is not a disclosure.
  *
  * @param {string} name
  */
-export async function scanIn(name) {
+export async function lookupMember(name) {
   const user = await usersRepository.findByName(name);
   if (!user) {
-    throw notFound(`No member found for "${name}". Try Dominic, Kean Hean or Chin An.`);
+    throw notFound(`No member found for "${name}". Check the spelling, or ask a member of staff.`);
+  }
+  return { id: user.id, name: user.name, memberNumber: user.memberNumber, tier: user.tier };
+}
+
+/**
+ * Step 2: "card scan" sign-in, gated on the member's 4-digit kiosk PIN.
+ *
+ * The kiosk is a shared floor screen — without the PIN anyone in the queue could
+ * open (and edit) someone else's weight, goals and plan just by typing a name
+ * they can see on the roster. The token this mints only ever grants access to
+ * that member's own training data.
+ *
+ * @param {string} name
+ * @param {string} pin
+ */
+export async function scanIn(name, pin) {
+  const user = await usersRepository.findByName(name);
+  if (!user) {
+    throw notFound(`No member found for "${name}". Check the spelling, or ask a member of staff.`);
+  }
+  if (!user.pinHash) {
+    throw forbidden(`${user.name} has no kiosk PIN yet. Ask staff to set one in the admin panel.`);
+  }
+  if (!(await verifyPin(pin, user.pinHash))) {
+    throw unauthorized('Incorrect PIN. Try again, or ask a member of staff.');
   }
 
   const { token, expiresAt } = createToken(

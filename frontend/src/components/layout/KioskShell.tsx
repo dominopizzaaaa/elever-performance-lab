@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useSession } from '@/providers/SessionProvider';
-import { idleTimeoutMs, useIdleLock } from '@/hooks/useIdleLock';
+import { idleTimeoutMs, idleWarningMs, useIdleLock } from '@/hooks/useIdleLock';
 import { cx } from '@/lib/format';
 import { BackdropFx } from './BackdropFx';
 import { Wordmark } from './Wordmark';
+import { IdleLockWarning } from './IdleLockWarning';
 
 interface KioskShellProps {
   children: ReactNode;
@@ -37,13 +38,14 @@ export function KioskShell({ children, bare = false }: KioskShellProps) {
 
   // Auto-lock back to the scan screen so a member's data does not sit on a
   // shared gym display after they leave.
-  useIdleLock(
-    () => {
+  const { secondsLeft, reset: staySignedIn } = useIdleLock({
+    onIdle: () => {
       if (user) scanOut();
     },
-    Boolean(user),
-    idleTimeoutMs(),
-  );
+    enabled: Boolean(user),
+    timeoutMs: idleTimeoutMs(),
+    warningMs: idleWarningMs(),
+  });
 
   // Rendered client-side only: a server-rendered clock would hydrate stale.
   useEffect(() => {
@@ -60,6 +62,10 @@ export function KioskShell({ children, bare = false }: KioskShellProps) {
     <div data-accent={user?.accentColor ?? 'cyan'} className="relative min-h-screen">
       <BackdropFx />
 
+      {secondsLeft !== null ? (
+        <IdleLockWarning secondsLeft={secondsLeft} onStay={staySignedIn} onScanOut={scanOut} />
+      ) : null}
+
       {/* Top status strip */}
       <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-void-900/70 backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-[900px] items-center justify-between gap-4 px-4 py-2.5 sm:px-6">
@@ -73,7 +79,7 @@ export function KioskShell({ children, bare = false }: KioskShellProps) {
             </span>
 
             {user ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <div className="text-right">
                   <p className="font-display text-[11px] font-bold uppercase tracking-[0.16em] text-white">
                     {user.name}
@@ -82,11 +88,16 @@ export function KioskShell({ children, bare = false }: KioskShellProps) {
                     {user.memberNumber}
                   </p>
                 </div>
+                {/* Deliberately loud: on a shared screen, leaving is the one
+                    action nobody should have to hunt for. */}
                 <button
                   type="button"
                   onClick={scanOut}
-                  className="rounded-lg border border-white/10 px-2.5 py-1.5 font-display text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50 transition hover:border-neon-red/50 hover:text-neon-red"
+                  className="flex shrink-0 items-center gap-2 rounded-xl border border-neon-red/45 bg-neon-red/10 px-4 py-2.5 font-display text-[11px] font-bold uppercase tracking-[0.16em] text-neon-red transition hover:bg-neon-red/20 hover:border-neon-red/70 active:brightness-95"
                 >
+                  <span aria-hidden className="text-sm leading-none">
+                    ⏻
+                  </span>
                   Scan out
                 </button>
               </div>

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { asyncHandler } from '../lib/errors.js';
 import { validate } from '../middleware/validate.js';
 import { requireStaff } from '../middleware/auth.js';
-import { createUserSchema, updateUserSchema } from '../schemas/index.js';
+import { adminUpdateUserSchema, createUserSchema } from '../schemas/index.js';
 import * as adminService from '../services/adminService.js';
 import * as usersService from '../services/usersService.js';
 import * as workoutsService from '../services/workoutsService.js';
@@ -38,10 +38,10 @@ adminRoutes.post(
   }),
 );
 
-/** PATCH /api/admin/members/:userId */
+/** PATCH /api/admin/members/:userId — staff may also reset the member's PIN. */
 adminRoutes.patch(
   '/members/:userId',
-  validate(updateUserSchema),
+  validate(adminUpdateUserSchema),
   asyncHandler(async (req, res) => {
     res.json({ user: await usersService.updateUser(req.params.userId, req.body) });
   }),

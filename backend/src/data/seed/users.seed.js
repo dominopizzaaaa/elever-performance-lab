@@ -3,10 +3,14 @@
  *
  * `weekdays` on a plan uses JS day numbers (0 = Sunday). The history generator
  * replays each plan day on its scheduled weekday to build a believable log.
+ *
+ * `pin` is the member's kiosk PIN in plaintext. It exists only here: the seed
+ * script hashes it into `pinHash` and the plaintext never reaches users.json.
  */
 export const USERS_SEED = [
   {
     id: 'usr_dominic',
+    pin: '4821',
     name: 'Dominic',
     slug: 'dominic',
     memberNumber: 'EPL-0001',
@@ -109,6 +113,7 @@ export const USERS_SEED = [
   },
   {
     id: 'usr_kean_hean',
+    pin: '7390',
     name: 'Kean Hean',
     slug: 'kean-hean',
     memberNumber: 'EPL-0002',
@@ -196,6 +201,7 @@ export const USERS_SEED = [
   },
   {
     id: 'usr_chin_an',
+    pin: '2648',
     name: 'Chin An',
     slug: 'chin-an',
     memberNumber: 'EPL-0003',

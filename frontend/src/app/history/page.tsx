@@ -24,7 +24,7 @@ const RANGES: { key: RangeKey; label: string; weeks: number | null }[] = [
 ];
 
 /**
- * Workout history: weekly tonnage, per-lift strength trends and a full session
+ * Workout history: weekly weight lifted, per-lift strength trends and a full session
  * timeline.
  *
  * Strength is shown as small multiples (one chart per lift) rather than several
@@ -136,7 +136,7 @@ export default function HistoryPage() {
       <PageHeading
         eyebrow="Archive"
         title="Workout history"
-        detail="Every session you have logged in the lab, with tonnage and strength trends derived from it."
+        detail="Every session you have logged in the lab, with the weight and strength trends derived from it."
       />
 
       <div className="flex flex-col gap-4">
@@ -166,7 +166,7 @@ export default function HistoryPage() {
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <StatTile label="Sessions" value={visibleSessions.length} hint={selectedRange.label} />
           <StatTile
-            label="Tonnage"
+            label="Weight lifted"
             value={formatVolume(visibleSessions.reduce((sum, session) => sum + session.metrics.volumeKg, 0))}
             hint={selectedRange.label}
           />
@@ -179,15 +179,15 @@ export default function HistoryPage() {
           <StatTile
             label="Week on week"
             value={deltaPct === null ? '—' : formatDelta(deltaPct, '%')}
-            hint="Tonnage · week in progress"
+            hint="Weight lifted · week in progress"
           />
         </div>
 
-        {/* Weekly tonnage */}
+        {/* Weekly weight lifted */}
         <Panel className="p-5">
           <PanelHeader
             label="Training load"
-            title="Weekly tonnage"
+            title="Weekly weight lifted"
             action={
               <span className="font-display text-[10px] uppercase tracking-[0.16em] text-white/30">
                 kg moved
@@ -198,7 +198,7 @@ export default function HistoryPage() {
             <VolumeBarChart
               className="mt-4"
               data={weeklyData}
-              seriesLabel="Tonnage"
+              seriesLabel="Weight lifted"
               unit="kg"
               withTable
             />
@@ -211,10 +211,10 @@ export default function HistoryPage() {
         <Panel className="p-5">
           <PanelHeader
             label="Strength"
-            title="Estimated 1RM by lift"
+            title="Estimated max lift"
             action={
               <span className="font-display text-[10px] uppercase tracking-[0.16em] text-white/30">
-                Epley
+                Heaviest single you could lift
               </span>
             }
           />
@@ -250,7 +250,7 @@ export default function HistoryPage() {
                       date: point.date,
                       value: point.estimatedOneRepMax,
                     }))}
-                    seriesLabel={`${trend.exercise} estimated 1RM`}
+                    seriesLabel={`${trend.exercise} estimated max lift`}
                   />
                 </div>
               ))}
@@ -271,7 +271,7 @@ export default function HistoryPage() {
               <HorizontalBars
                 className="mt-4"
                 data={muscleData}
-                seriesLabel="Tonnage by muscle group"
+                seriesLabel="Weight lifted by muscle group"
                 unit=" kg"
               />
             ) : (

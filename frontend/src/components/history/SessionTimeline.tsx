@@ -96,13 +96,13 @@ export function SessionTimeline({ sessions }: SessionTimelineProps) {
                       { label: 'Reps', value: String(session.metrics.reps) },
                       { label: 'Top set', value: `${session.metrics.topSetKg} kg` },
                       {
-                        label: 'Est. 1RM',
+                        label: 'Est. max',
                         value: session.metrics.bestEstimatedOneRepMax
                           ? `${session.metrics.bestEstimatedOneRepMax} kg`
                           : '—',
                       },
                       {
-                        label: 'Avg RPE',
+                        label: 'Avg effort',
                         value: session.metrics.averageRpe !== null ? String(session.metrics.averageRpe) : '—',
                       },
                     ].map((stat) => (
@@ -130,7 +130,7 @@ export function SessionTimeline({ sessions }: SessionTimelineProps) {
                               <span
                                 key={set.id}
                                 className="rounded-md border border-white/[0.08] bg-void-800/70 px-2 py-1 text-[11px] tabular-nums text-white/65"
-                                title={`Set ${index + 1}${set.rpe !== null ? ` · RPE ${set.rpe}` : ''}`}
+                                title={`Set ${index + 1}${set.rpe !== null ? ` · effort ${set.rpe}/10` : ''}`}
                               >
                                 {formatWeight(set.weightKg)}
                                 <span className="mx-1 text-white/25">×</span>

@@ -19,7 +19,7 @@ interface HorizontalBarsProps {
 
 /**
  * Ranked horizontal bars for categorical breakdowns (training focus split,
- * per-member tonnage). Length carries the magnitude, so a single hue is
+ * per-member weight lifted). Length carries the magnitude, so a single hue is
  * correct — colour does no identity work here.
  *
  * Built with divs rather than SVG so labels reflow naturally on a portrait

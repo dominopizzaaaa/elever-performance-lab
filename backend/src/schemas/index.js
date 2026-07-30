@@ -16,10 +16,11 @@ const reps = z
   .min(1, 'Log at least 1 rep')
   .max(500, 'Reps look unrealistic (max 500)');
 
+/** Effort ("RPE" in coaching shorthand) — the kiosk labels this 1–10 effort. */
 const rpe = z
   .number()
-  .min(1, 'RPE ranges from 1 to 10')
-  .max(10, 'RPE ranges from 1 to 10')
+  .min(1, 'Effort ranges from 1 to 10')
+  .max(10, 'Effort ranges from 1 to 10')
   .nullable()
   .optional();
 
@@ -27,44 +28,67 @@ const muscleGroup = z.enum(/** @type {[string, ...string[]]} */ (MUSCLE_GROUP_KE
 
 const gender = z.enum(['male', 'female']);
 
-export const scanSchema = z.object({
-  name: z
-    .string({ required_error: 'Enter your name to scan in' })
-    .trim()
-    .min(2, 'Enter at least 2 characters')
-    .max(60, 'That name is too long'),
-});
+/** Kiosk PIN: exactly four digits, kept as a string so leading zeros survive. */
+const pin = z
+  .string({ required_error: 'Enter your 4-digit PIN' })
+  .regex(/^\d{4}$/, 'Your PIN is 4 digits');
+
+const memberName = z
+  .string({ required_error: 'Enter your name to scan in' })
+  .trim()
+  .min(2, 'Enter at least 2 characters')
+  .max(60, 'That name is too long');
+
+/** Step 1 of scan-in: resolve a typed name so the kiosk can confirm who it is. */
+export const scanLookupSchema = z.object({ name: memberName });
+
+/** Step 2: the same name plus the member's PIN. */
+export const scanSchema = z.object({ name: memberName, pin });
 
 export const adminLoginSchema = z.object({
   username: z.string().trim().min(1, 'Username is required').max(60),
   password: z.string().min(1, 'Password is required').max(200),
 });
 
+const userPatchShape = {
+  name: z.string().trim().min(2).max(60).optional(),
+  age: z.number().int().min(10, 'Age must be at least 10').max(100).optional(),
+  weightKg: weightKg.optional(),
+  heightCm: z.number().min(80).max(260).optional(),
+  gender: gender.optional(),
+  bodyFatPct: z.number().min(2).max(60).nullable().optional(),
+  restingHr: z.number().int().min(30).max(140).nullable().optional(),
+  tagline: z.string().trim().max(140).optional(),
+  tier: z.string().trim().max(40).optional(),
+  goals: z
+    .object({
+      weeklySessions: z.number().int().min(1).max(14).optional(),
+      weeklyVolumeKg: z.number().min(0).max(500_000).optional(),
+      targetWeightKg: weightKg.optional(),
+      focus: z.string().trim().max(60).optional(),
+    })
+    .optional(),
+};
+
+const notEmpty = { message: 'Nothing to update' };
+
 export const updateUserSchema = z
-  .object({
-    name: z.string().trim().min(2).max(60).optional(),
-    age: z.number().int().min(10, 'Age must be at least 10').max(100).optional(),
-    weightKg: weightKg.optional(),
-    heightCm: z.number().min(80).max(260).optional(),
-    gender: gender.optional(),
-    bodyFatPct: z.number().min(2).max(60).nullable().optional(),
-    restingHr: z.number().int().min(30).max(140).nullable().optional(),
-    tagline: z.string().trim().max(140).optional(),
-    tier: z.string().trim().max(40).optional(),
-    goals: z
-      .object({
-        weeklySessions: z.number().int().min(1).max(14).optional(),
-        weeklyVolumeKg: z.number().min(0).max(500_000).optional(),
-        targetWeightKg: weightKg.optional(),
-        focus: z.string().trim().max(60).optional(),
-      })
-      .optional(),
-  })
+  .object(userPatchShape)
   .strict()
-  .refine((value) => Object.keys(value).length > 0, { message: 'Nothing to update' });
+  .refine((value) => Object.keys(value).length > 0, notEmpty);
+
+/**
+ * Staff may additionally reset a member's kiosk PIN. Members cannot — that path
+ * shares `updateUserSchema`, which rejects the field outright.
+ */
+export const adminUpdateUserSchema = z
+  .object({ ...userPatchShape, pin: pin.optional() })
+  .strict()
+  .refine((value) => Object.keys(value).length > 0, notEmpty);
 
 export const createUserSchema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(60),
+  pin,
   age: z.number().int().min(10).max(100),
   weightKg,
   heightCm: z.number().min(80).max(260).optional(),

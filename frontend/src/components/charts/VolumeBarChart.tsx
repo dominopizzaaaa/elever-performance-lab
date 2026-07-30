@@ -31,7 +31,7 @@ const MAX_BAR_WIDTH = 16;
 const BAR_GAP = 2; // surface-coloured gap between adjacent bars
 
 /**
- * Single-series column chart for weekly tonnage.
+ * Single-series column chart for weekly weight lifted.
  *
  * One series means no legend box: the panel heading names what is plotted. Only
  * the highest column is directly labelled; the axis and tooltip carry the rest.

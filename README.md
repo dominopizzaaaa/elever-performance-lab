@@ -23,7 +23,8 @@ npm run seed         # creates the JSON "database" (safe: skips existing files)
 npm run dev          # backend on :4000, kiosk on :3000
 ```
 
-Open <http://localhost:3000> and scan in as **Dominic**, **Kean Hean** or **Chin An**.
+Open <http://localhost:3000> and scan in as **Dominic** (PIN `4821`), **Kean Hean**
+(`7390`) or **Chin An** (`2648`). `npm run seed` prints the same list.
 
 | What | Where |
 | --- | --- |
@@ -50,9 +51,9 @@ npm run seed -w backend -- --force   # reset the demo data
 
 | Route | What it does |
 | --- | --- |
-| `/` | Hero + card reader. Typing a name simulates tapping a member card. |
+| `/` | Hero + card reader. Type a name, confirm it's you, unlock with a 4-digit PIN. |
 | `/dashboard` | AI body avatar, weekly goals, today's log, plan, editable profile, PRs. |
-| `/history` | Weekly tonnage chart, per-lift 1RM trends, muscle balance, session timeline. |
+| `/history` | Weekly weight-lifted chart, per-lift max-lift trends, muscle balance, session timeline. |
 | `/analytics` | **Placeholder.** "Coming Soon: AI Form Analysis" + working video queue. |
 | `/admin` | Staff-only. Floor overview, member CRUD, workout log management. |
 
@@ -65,8 +66,8 @@ npm run seed -w backend -- --force   # reset the demo data
    is prefilled from the previous set, so repeating a load is one tap on **Log set**.
 4. Sets can be corrected or deleted inline. Exercises can be added from a
    46-movement library with autocomplete.
-5. Beating a stored 1RM estimate promotes the set to a personal record and fires
-   a toast.
+5. Beating a stored max-lift estimate promotes the set to a personal record and
+   fires a toast.
 
 Every one of those writes lands in `backend/src/data/workouts.json` immediately.
 
@@ -144,7 +145,7 @@ keys are kept in sync with `backend/src/data/seed/muscleGroups.js`.
 **Charts are hand-rolled SVG** and deliberately single-series: bars capped with a
 4px rounded data-end, 2px lines, hairline solid gridlines, hover tooltips, axis
 text in ink tokens rather than the series colour, and a data-table fallback on
-the tonnage chart. Six lifts' 1RM trends are **small multiples** rather than six
+the weight-lifted chart. Six lifts' max-lift trends are **small multiples** rather than six
 series on shared axes — converging lines are unreadable and would need a
 categorical palette to tell apart.
 
@@ -157,11 +158,15 @@ week is always mid-flight and would otherwise look like a collapse every Monday.
 
 The two auth paths are deliberately different, because they defend different things.
 
-**Member scan-in is not a security boundary.** It mirrors tapping a gym card on a
-reader: anyone at the kiosk can scan in as any member. What it does guarantee is
-that the token it mints only reaches that member's own data — the API rejects
-cross-member reads and writes (`requireSelfOrStaff`), so a bug in the UI cannot
-leak someone else's log.
+**Member scan-in is gated on a 4-digit PIN.** The kiosk is a shared floor screen:
+without a PIN, anyone in the queue could open — and edit — someone else's weight,
+goals and plan just by typing a name off the roster. So scan-in is two steps
+(`/auth/scan/lookup` confirms *who*, `/auth/scan` checks the PIN), PINs are
+scrypt-hashed exactly like staff passwords and never leave the server, and failed
+attempts are rate-limited to 20 a minute — successful scans are not counted, so a
+busy floor is never locked out. The token a scan mints still only reaches that
+member's own data: the API rejects cross-member reads and writes
+(`requireSelfOrStaff`), so a bug in the UI cannot leak someone else's log.
 
 **Staff login is a real boundary.** Passwords are scrypt-hashed in `admins.json`,
 compared in constant time, and the endpoint runs a verification even for unknown
@@ -171,7 +176,9 @@ rate-limited (10 per 10 minutes) and return one generic message.
 Also in place: HMAC-SHA256 signed tokens with expiry (members 2h, staff 1h),
 strict zod validation that rejects unknown fields, a 256kb body cap, an origin
 allow-list, separate `sessionStorage` keys for member and staff sessions, and a
-kiosk idle lock that returns the screen to the scan prompt after 10 minutes.
+kiosk idle lock that returns the screen to the scan prompt after 90 seconds — with
+a 15-second countdown first, so nobody reading their plan between sets is dumped
+out without warning.
 
 `AUTH_SECRET` **must** be set when `NODE_ENV=production` — the server refuses to
 boot with the development secret.
@@ -195,7 +202,8 @@ cp frontend/.env.local.example frontend/.env.local
 | `MEMBER_TOKEN_TTL` / `ADMIN_TOKEN_TTL` | `7200` / `3600` | Seconds |
 | `LOG_LEVEL` | `short` | `none` \| `short` \| `verbose` |
 | `API_PROXY_TARGET` | `http://localhost:4000` | Where Next proxies `/api` |
-| `NEXT_PUBLIC_KIOSK_IDLE_TIMEOUT` | `600` | Seconds; `0` disables auto-lock |
+| `NEXT_PUBLIC_KIOSK_IDLE_TIMEOUT` | `90` | Seconds; `0` disables auto-lock |
+| `NEXT_PUBLIC_KIOSK_IDLE_WARNING` | `15` | Seconds of countdown before the lock |
 
 ---
 
@@ -248,7 +256,7 @@ To make it live, in order:
    onto the upload record, flip `status` to `complete`, and poll
    `GET /api/analytics/uploads` to render results instead of the queued chip.
 5. **Close the loop.** Link a completed analysis to the logged exercise so the
-   dashboard can show a technique score beside the tonnage.
+   dashboard can show a technique score beside the weight lifted.
 
 Every one of those steps has a `TODO(ai-analytics)` marker at the code it touches:
 
@@ -264,7 +272,8 @@ All routes are under `/api`. `Authorization: Bearer <token>` unless noted.
 
 | Method | Route | Auth | Purpose |
 | --- | --- | --- | --- |
-| `POST` | `/auth/scan` | public | Scan in by name |
+| `POST` | `/auth/scan/lookup` | public | Resolve a typed name to a member |
+| `POST` | `/auth/scan` | public | Scan in with name + 4-digit PIN |
 | `POST` | `/auth/staff/login` | public | Staff sign-in |
 | `GET` | `/auth/me` | any | Resolve the current identity |
 | `GET` | `/users` | staff | Roster with stats |

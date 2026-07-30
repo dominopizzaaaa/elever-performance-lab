@@ -241,7 +241,9 @@ function SetRow({ set, index, sessionId, exerciseId, token, readOnly, onUpdated 
         {formatWeight(set.weightKg)}
         <span className="mx-1.5 text-white/25">×</span>
         {set.reps}
-        {set.rpe !== null ? <span className="ml-2 text-xs text-white/35">RPE {set.rpe}</span> : null}
+        {set.rpe !== null ? (
+          <span className="ml-2 text-xs text-white/35">Effort {set.rpe}/10</span>
+        ) : null}
       </span>
 
       <span className="shrink-0 text-[11px] tabular-nums text-white/25">{formatTime(set.completedAt)}</span>

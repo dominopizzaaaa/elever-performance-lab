@@ -5,19 +5,21 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { KioskShell } from '@/components/layout/KioskShell';
 import { Wordmark } from '@/components/layout/Wordmark';
+import { PinPad } from '@/components/auth/PinPad';
 import { NeonButton } from '@/components/ui/NeonButton';
 import { Panel } from '@/components/ui/Panel';
 import { useSession } from '@/providers/SessionProvider';
 import { useToast } from '@/providers/ToastProvider';
-import { ApiError } from '@/lib/api';
+import { api, ApiError } from '@/lib/api';
 import { cx } from '@/lib/format';
+import type { MemberIdentity } from '@/lib/types';
 
 /** The three hard-coded members, offered as one-tap shortcuts for the demo. */
 const DEMO_MEMBERS = ['Dominic', 'Kean Hean', 'Chin An'] as const;
 
 const FEATURES = [
-  { title: 'Live set logging', detail: 'Reps, load and RPE captured between sets.' },
-  { title: 'Progress analytics', detail: 'Tonnage, streaks and estimated 1RM trends.' },
+  { title: 'Live set logging', detail: 'Reps, load and effort captured between sets.' },
+  { title: 'Progress analytics', detail: 'Weight lifted, streaks and estimated max-lift trends.' },
   { title: 'AI form analysis', detail: 'Video technique scoring — coming soon.' },
 ] as const;
 
@@ -40,6 +42,14 @@ export default function LandingPage() {
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  /**
+   * Scan-in is two steps: resolve the typed name, then confirm identity and
+   * unlock with a PIN. Holding the resolved member here is what lets the second
+   * screen say whose profile is about to open.
+   */
+  const [pending, setPending] = useState<MemberIdentity | null>(null);
+  const [pinError, setPinError] = useState<string | null>(null);
+  const [pinAttempt, setPinAttempt] = useState(0);
 
   // Already scanned in (e.g. after a refresh) — go straight to the dashboard.
   useEffect(() => {
@@ -47,10 +57,11 @@ export default function LandingPage() {
   }, [isRestoring, user, router]);
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if (!pending) inputRef.current?.focus();
+  }, [pending]);
 
-  async function handleScan(value: string) {
+  /** Step 1 — who is this? */
+  async function handleLookup(value: string) {
     const trimmed = value.trim();
     if (trimmed.length < 2) {
       setError('Enter your name to scan in');
@@ -61,17 +72,39 @@ export default function LandingPage() {
     setIsScanning(true);
     setError(null);
     try {
-      const member = await scanIn(trimmed);
-      toast.success(`Welcome back, ${member.name}`, member.tagline);
-      router.push('/dashboard');
+      const { member } = await api.lookupMember(trimmed);
+      setPinError(null);
+      setPinAttempt((count) => count + 1);
+      setPending(member);
     } catch (caught) {
-      const message =
-        caught instanceof ApiError ? caught.message : 'Could not reach the reader. Try again.';
-      setError(message);
+      setError(caught instanceof ApiError ? caught.message : 'Could not reach the reader. Try again.');
       inputRef.current?.focus();
     } finally {
       setIsScanning(false);
     }
+  }
+
+  /** Step 2 — prove it. */
+  async function handlePin(pin: string) {
+    if (!pending) return;
+
+    setIsScanning(true);
+    setPinError(null);
+    try {
+      const member = await scanIn(pending.name, pin);
+      toast.success(`Welcome back, ${member.name}`, member.tagline);
+      router.push('/dashboard');
+    } catch (caught) {
+      setPinError(caught instanceof ApiError ? caught.message : 'Could not reach the reader. Try again.');
+      setPinAttempt((count) => count + 1);
+    } finally {
+      setIsScanning(false);
+    }
+  }
+
+  function cancelPin() {
+    setPending(null);
+    setPinError(null);
   }
 
   return (
@@ -115,82 +148,96 @@ export default function LandingPage() {
             aria-hidden
           />
 
-          <div className="relative">
-            <h2 className="text-center font-display text-lg font-bold uppercase tracking-[0.2em] text-white sm:text-xl">
-              Enter your name to begin
-            </h2>
-            <p className="mt-2 text-center text-sm text-white/40">
-              Typing your name simulates tapping your member card on the reader.
-            </p>
+          {pending ? (
+            <PinPad
+              member={pending}
+              onSubmit={(pin) => void handlePin(pin)}
+              onCancel={cancelPin}
+              isVerifying={isScanning}
+              error={pinError}
+              clearSignal={pinAttempt}
+            />
+          ) : (
+            <div className="relative">
+              <h2 className="text-center font-display text-lg font-bold uppercase tracking-[0.2em] text-white sm:text-xl">
+                Enter your name to begin
+              </h2>
+              <p className="mt-2 text-center text-sm text-white/40">
+                Typing your name simulates tapping your member card on the reader.
+              </p>
 
-            <form
-              className="mt-6"
-              onSubmit={(event) => {
-                event.preventDefault();
-                void handleScan(name);
-              }}
-            >
-              <div>
-                <input
-                  ref={inputRef}
-                  value={name}
-                  onChange={(event) => {
-                    setName(event.target.value);
-                    if (error) setError(null);
-                  }}
-                  placeholder="Your name"
-                  autoComplete="off"
-                  autoCapitalize="words"
-                  spellCheck={false}
-                  aria-label="Member name"
-                  aria-invalid={error ? true : undefined}
-                  aria-describedby={error ? 'scan-error' : undefined}
-                  className={cx(
-                    'field h-16 text-center font-display text-xl font-bold uppercase tracking-[0.18em]',
-                    error && '!border-neon-red/60',
-                  )}
-                />
-              </div>
-
-              {error ? (
-                <p id="scan-error" role="alert" className="mt-3 text-center text-sm text-neon-red">
-                  {error}
-                </p>
-              ) : null}
-
-              <NeonButton
-                type="submit"
-                size="lg"
-                fullWidth
-                isLoading={isScanning}
-                className="mt-5"
-                icon={!isScanning ? <span aria-hidden>▶</span> : undefined}
+              <form
+                className="mt-6"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void handleLookup(name);
+                }}
               >
-                {isScanning ? 'Reading card' : 'Scan in'}
-              </NeonButton>
-            </form>
-
-            {/* Demo shortcuts */}
-            <div className="mt-7 border-t border-white/[0.07] pt-5">
-              <p className="hud-label text-center">Registered members</p>
-              <div className="mt-3 flex flex-wrap justify-center gap-2">
-                {DEMO_MEMBERS.map((member) => (
-                  <button
-                    key={member}
-                    type="button"
-                    disabled={isScanning}
-                    onClick={() => {
-                      setName(member);
-                      void handleScan(member);
+                <div>
+                  <input
+                    ref={inputRef}
+                    value={name}
+                    onChange={(event) => {
+                      setName(event.target.value);
+                      if (error) setError(null);
                     }}
-                    className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 font-display text-[11px] font-semibold uppercase tracking-[0.16em] text-white/65 transition hover:border-accent/50 hover:bg-accent-soft hover:text-accent disabled:opacity-40"
-                  >
-                    {member}
-                  </button>
-                ))}
+                    placeholder="Your name"
+                    autoComplete="off"
+                    autoCapitalize="words"
+                    spellCheck={false}
+                    aria-label="Member name"
+                    aria-invalid={error ? true : undefined}
+                    aria-describedby={error ? 'scan-error' : undefined}
+                    className={cx(
+                      'field h-16 text-center font-display text-xl font-bold uppercase tracking-[0.18em]',
+                      error && '!border-neon-red/60',
+                    )}
+                  />
+                </div>
+
+                {error ? (
+                  <p id="scan-error" role="alert" className="mt-3 text-center text-sm text-neon-red">
+                    {error}
+                  </p>
+                ) : null}
+
+                <NeonButton
+                  type="submit"
+                  size="lg"
+                  fullWidth
+                  isLoading={isScanning}
+                  className="mt-5"
+                  icon={!isScanning ? <span aria-hidden>▶</span> : undefined}
+                >
+                  {isScanning ? 'Reading card' : 'Scan in'}
+                </NeonButton>
+              </form>
+
+              {/* Demo shortcuts */}
+              <div className="mt-7 border-t border-white/[0.07] pt-5">
+                <p className="hud-label text-center">Registered members</p>
+                <div className="mt-3 flex flex-wrap justify-center gap-2">
+                  {DEMO_MEMBERS.map((member) => (
+                    <button
+                      key={member}
+                      type="button"
+                      disabled={isScanning}
+                      onClick={() => {
+                        setName(member);
+                        void handleLookup(member);
+                      }}
+                      className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 font-display text-[11px] font-semibold uppercase tracking-[0.16em] text-white/65 transition hover:border-accent/50 hover:bg-accent-soft hover:text-accent disabled:opacity-40"
+                    >
+                      {member}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-3 text-center text-xs text-white/25">
+                  Each member unlocks with their own 4-digit PIN.
+                </p>
               </div>
             </div>
-          </div>
+          )}
         </Panel>
 
         {/* ---------------------------------------------------------------- */}

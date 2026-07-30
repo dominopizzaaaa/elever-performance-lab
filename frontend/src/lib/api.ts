@@ -4,6 +4,7 @@ import type {
   AnalyticsStatus,
   ExerciseLibrary,
   LoggedSet,
+  MemberIdentity,
   PersonalRecord,
   SessionExercise,
   StaffAccount,
@@ -87,11 +88,15 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 /* -------------------------------------------------------------------------- */
 
 export const api = {
-  /** Simulated card scan — resolves a typed name to a member. */
-  scan: (name: string) =>
+  /** Step 1 of scan-in: who does this typed name belong to? */
+  lookupMember: (name: string) =>
+    request<{ member: MemberIdentity }>('/auth/scan/lookup', { method: 'POST', body: { name } }),
+
+  /** Step 2: simulated card scan, gated on the member's 4-digit kiosk PIN. */
+  scan: (name: string, pin: string) =>
     request<{ token: string; expiresAt: string; user: User }>('/auth/scan', {
       method: 'POST',
-      body: { name },
+      body: { name, pin },
     }),
 
   staffLogin: (username: string, password: string) =>
@@ -254,7 +259,16 @@ export const api = {
       request<{ users: UserWithStats[] }>('/admin/members', { token, signal }),
 
     createMember: (
-      body: { name: string; age: number; weightKg: number; heightCm?: number; tier?: string; tagline?: string },
+      body: {
+        name: string;
+        /** 4 digits — the member types this to scan in at the kiosk. */
+        pin: string;
+        age: number;
+        weightKg: number;
+        heightCm?: number;
+        tier?: string;
+        tagline?: string;
+      },
       token: string,
     ) => request<{ user: User }>('/admin/members', { method: 'POST', body, token }),
 

@@ -89,7 +89,7 @@ export function MembersTable({ members, token, selectedUserId, onSelect, onChang
                 { label: 'Age', value: `${member.age}` },
                 { label: 'Weight', value: formatWeight(member.weightKg) },
                 { label: 'Sessions', value: `${member.stats.sessions}` },
-                { label: 'Tonnage', value: formatVolume(member.stats.volumeKg) },
+                { label: 'Lifted', value: formatVolume(member.stats.volumeKg) },
                 { label: 'Streak', value: `${member.stats.streakDays}d` },
                 {
                   label: 'Last seen',

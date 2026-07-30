@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { api, ApiError } from '@/lib/api';
+import { useSession } from '@/providers/SessionProvider';
 import { useToast } from '@/providers/ToastProvider';
 import { Panel, PanelHeader } from '@/components/ui/Panel';
 import { NeonButton } from '@/components/ui/NeonButton';
@@ -22,11 +23,12 @@ interface TodaySessionPanelProps {
  * Today's training log — the panel a member actually stands in front of.
  *
  * Every mutation returns the recalculated session from the API and replaces
- * local state wholesale, so the displayed tonnage can never drift out of sync
+ * local state wholesale, so the displayed totals can never drift out of sync
  * with what is on disk.
  */
 export function TodaySessionPanel({ user, token, session, onSessionChange }: TodaySessionPanelProps) {
   const toast = useToast();
+  const { scanOut } = useSession();
   const [isStarting, setIsStarting] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
@@ -222,6 +224,28 @@ export function TodaySessionPanel({ user, token, session, onSessionChange }: Tod
       >
         {isCompleted ? 'Reopen session' : 'Finish session'}
       </NeonButton>
+
+      {/* The moment someone is most likely to walk off leaving their profile up. */}
+      {isCompleted ? (
+        <Panel accent edge className="p-5 text-center">
+          <p className="font-display text-sm font-bold uppercase tracking-[0.12em] text-white">
+            Done training?
+          </p>
+          <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-white/45">
+            Scan out so the next member gets a clean screen. Everything you logged is already saved.
+          </p>
+          <NeonButton
+            variant="danger"
+            size="lg"
+            fullWidth
+            className="mt-4"
+            onClick={scanOut}
+            icon={<span aria-hidden>⏻</span>}
+          >
+            Scan out
+          </NeonButton>
+        </Panel>
+      ) : null}
     </div>
   );
 }

@@ -87,7 +87,7 @@ export default function AdminPage() {
     [sessions, selectedUserId],
   );
 
-  const tonnageByMember = useMemo(
+  const volumeByMember = useMemo(
     () =>
       members
         .map((member) => ({ label: member.name, value: member.stats.volumeKg }))
@@ -175,7 +175,7 @@ export default function AdminPage() {
                 hint="Across the floor"
               />
               <StatTile
-                label="7-day tonnage"
+                label="7-day weight lifted"
                 value={formatVolume(overview?.volume.last7DaysKg ?? 0)}
                 hint={`${formatNumber(overview?.volume.last7DaysSets ?? 0)} sets`}
               />
@@ -187,12 +187,12 @@ export default function AdminPage() {
             </div>
 
             <Panel className="p-5">
-              <PanelHeader label="All time" title="Tonnage by member" />
-              {tonnageByMember.length > 0 ? (
+              <PanelHeader label="All time" title="Weight lifted by member" />
+              {volumeByMember.length > 0 ? (
                 <HorizontalBars
                   className="mt-4"
-                  data={tonnageByMember}
-                  seriesLabel="Tonnage by member"
+                  data={volumeByMember}
+                  seriesLabel="Weight lifted by member"
                   unit=" kg"
                 />
               ) : (

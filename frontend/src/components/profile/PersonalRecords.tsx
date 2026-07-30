@@ -3,7 +3,7 @@ import { EmptyState } from '@/components/ui/Feedback';
 import { formatRelativeDate, formatWeight } from '@/lib/format';
 import type { PersonalRecord } from '@/lib/types';
 
-/** Estimated 1RM (Epley), mirroring the server's calculation. */
+/** Estimated max lift (Epley formula), mirroring the server's calculation. */
 function estimateOneRepMax(weightKg: number, reps: number): number {
   if (!weightKg || !reps) return 0;
   return Math.round(weightKg * (1 + Math.min(reps, 12) / 30) * 10) / 10;
@@ -45,7 +45,7 @@ export function PersonalRecords({ records }: { records: PersonalRecord[] }) {
                     {record.reps > 1 ? <span className="text-white/35"> × {record.reps}</span> : null}
                   </span>
                   {estimate > 0 ? (
-                    <span className="block text-[11px] tabular-nums text-white/30">~{estimate} kg max</span>
+                    <span className="block text-[11px] tabular-nums text-white/30">est. max {estimate} kg</span>
                   ) : null}
                 </span>
               </li>

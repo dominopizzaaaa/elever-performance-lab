@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-30T13:13:40.366Z",
+  "updatedAt": "2026-07-30T15:55:35.636Z",
   "users": [
     {
       "id": "usr_dominic",
@@ -272,7 +272,8 @@
         ]
       },
       "createdAt": "2026-07-30T13:13:40.366Z",
-      "updatedAt": "2026-07-30T13:13:40.366Z"
+      "updatedAt": "2026-07-30T13:13:40.366Z",
+      "pinHash": "scrypt$16384$8$1$fouSX/d9LOFLCkawU67Vwg==$VfpBXHwMljRZJDkwtBhjrzGK9zxui3S2GFT913+EPInn6Oc9nB+Vt5vZxNnfKjF8PT6vshmHXhdMSdyx+4G6Bw=="
     },
     {
       "id": "usr_kean_hean",
@@ -319,6 +320,13 @@
           "weightKg": 32.5,
           "reps": 3,
           "achievedAt": "2026-07-25"
+        },
+        {
+          "exercise": "Lat Pulldown",
+          "weightKg": 70,
+          "reps": 10,
+          "achievedAt": "2026-07-30",
+          "estimatedOneRepMax": 93.3
         }
       ],
       "currentPlan": {
@@ -485,7 +493,26 @@
         ]
       },
       "createdAt": "2026-07-30T13:13:40.366Z",
-      "updatedAt": "2026-07-30T13:13:40.366Z"
+      "updatedAt": "2026-07-30T15:55:35.636Z",
+      "pinHash": "scrypt$16384$8$1$p6RjTMy4/MWTBZ5NBC0YWQ==$FO2dg+A3kgD3FUxscaT5MztBpAkNzYTvI5fp3GYqHH7i7x5kes5WJbjYGCMbUT2yYp+XTYx2QkroCZCsKZV6Kw==",
+      "weightHistory": [
+        {
+          "date": "2026-07-30T15:38:09.238Z",
+          "weightKg": 71.60000000000001
+        },
+        {
+          "date": "2026-07-30T15:38:09.370Z",
+          "weightKg": 71.2
+        },
+        {
+          "date": "2026-07-30T15:55:35.462Z",
+          "weightKg": 71.60000000000001
+        },
+        {
+          "date": "2026-07-30T15:55:35.636Z",
+          "weightKg": 71.2
+        }
+      ]
     },
     {
       "id": "usr_chin_an",
@@ -692,7 +719,8 @@
         ]
       },
       "createdAt": "2026-07-30T13:13:40.366Z",
-      "updatedAt": "2026-07-30T13:13:40.366Z"
+      "updatedAt": "2026-07-30T13:13:40.366Z",
+      "pinHash": "scrypt$16384$8$1$aRMMmik66PBQ9aWOSU7q5A==$VW/13qFcNTT5yIDJDFd9z6ew2uplcCg9gQ7KWpZ/1X+BNujVMmfX5yNz4bcUoeclTsMSI8iiy3xQ3nOhnORSiA=="
     }
   ]
 }
