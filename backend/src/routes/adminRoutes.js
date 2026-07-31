@@ -38,7 +38,7 @@ adminRoutes.post(
   }),
 );
 
-/** PATCH /api/admin/members/:userId — staff may also reset the member's PIN. */
+/** PATCH /api/admin/members/:userId — staff edit a member's profile. */
 adminRoutes.patch(
   '/members/:userId',
   validate(adminUpdateUserSchema),

@@ -18,9 +18,9 @@ const loginLimiter = rateLimit({
 });
 
 /**
- * A 4-digit PIN is only 10,000 combinations, so the scan endpoint has to be the
- * thing that makes guessing impractical. Successful scans are not counted —
- * a busy floor can sign in all day, but 20 *failures* a minute is the ceiling.
+ * Keeps the scan endpoints from being used to sweep the member roster.
+ * Successful scans are not counted — a busy floor can sign in all day, but 20
+ * *failed* lookups a minute is the ceiling.
  */
 const scanLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -43,13 +43,13 @@ authRoutes.post(
   }),
 );
 
-/** POST /api/auth/scan — simulated card scan: member name + their kiosk PIN. */
+/** POST /api/auth/scan — simulated card scan: the confirmed member name. */
 authRoutes.post(
   '/scan',
   scanLimiter,
   validate(scanSchema),
   asyncHandler(async (req, res) => {
-    const result = await authService.scanIn(req.body.name, req.body.pin);
+    const result = await authService.scanIn(req.body.name);
     res.json(result);
   }),
 );

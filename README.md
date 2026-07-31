@@ -23,8 +23,8 @@ npm run seed         # creates the JSON "database" (safe: skips existing files)
 npm run dev          # backend on :4000, kiosk on :3000
 ```
 
-Open <http://localhost:3000> and scan in as **Dominic** (PIN `4821`), **Kean Hean**
-(`7390`) or **Chin An** (`2648`). `npm run seed` prints the same list.
+Open <http://localhost:3000> and scan in as **Dominic**, **Kean Hean** or
+**Chin An** — type the name and confirm. `npm run seed` prints the same list.
 
 | What | Where |
 | --- | --- |
@@ -39,7 +39,7 @@ Other commands:
 ```bash
 npm run build        # production build of the kiosk
 npm start            # run both in production mode
-npm run smoke        # 32 end-to-end API checks against the real JSON files
+npm run smoke        # 33 end-to-end API checks against the real JSON files
 npm run lint         # eslint
 npm run typecheck    # tsc --noEmit
 npm run seed -w backend -- --force   # reset the demo data
@@ -51,7 +51,7 @@ npm run seed -w backend -- --force   # reset the demo data
 
 | Route | What it does |
 | --- | --- |
-| `/` | Hero + card reader. Type a name, confirm it's you, unlock with a 4-digit PIN. |
+| `/` | Hero + card reader. Type a name, confirm it's you, and the profile opens. |
 | `/dashboard` | AI body avatar, weekly goals, today's log, plan, editable profile, PRs. |
 | `/history` | Weekly weight-lifted chart, per-lift max-lift trends, muscle balance, session timeline. |
 | `/analytics` | **Placeholder.** "Coming Soon: AI Form Analysis" + working video queue. |
@@ -135,12 +135,18 @@ variable (`--accent-rgb`) set from the member's `accentColor`, so scanning in as
 Dominic (cyan), Kean Hean (lime) or Chin An (magenta) re-themes the entire
 interface without swapping a class name.
 
-**The AI body avatar** maps each muscle group's share of the last 14 days of
-volume to its brightness. Posterior groups (back, hamstrings, glutes, triceps)
-render as lateral bands, because a front-facing figure cannot show them honestly;
-the legend underneath carries the precise numbers. Groups worked in today's
-session pulse. Geometry lives in `components/avatar/muscleRegions.ts` and its
-keys are kept in sync with `backend/src/data/seed/muscleGroups.js`.
+**The AI body avatar** heat-maps each muscle group's share of the last 14 days of
+volume: cold blue for a group you have not touched, deepening to red the more
+work it has absorbed. The figure spins — drag it or press *Turn around* — because
+lats, triceps, glutes and hamstrings are on the back of the body and are drawn
+where they actually are rather than hinted at with flank bands. Hovering any
+region lights it up and names it; groups worked in today's session pulse.
+Geometry lives in `components/avatar/muscleRegions.ts` and its keys are kept in
+sync with `backend/src/data/seed/muscleGroups.js`.
+
+The heat ramp climbs blue → indigo → purple → red rather than the obvious blue →
+orange → red: a straight blue-to-orange interpolation greys out at the midpoint,
+which would make a half-trained group look like an untrained one.
 
 **Charts are hand-rolled SVG** and deliberately single-series: bars capped with a
 4px rounded data-end, 2px lines, hairline solid gridlines, hover tooltips, axis
@@ -158,13 +164,12 @@ week is always mid-flight and would otherwise look like a collapse every Monday.
 
 The two auth paths are deliberately different, because they defend different things.
 
-**Member scan-in is gated on a 4-digit PIN.** The kiosk is a shared floor screen:
-without a PIN, anyone in the queue could open — and edit — someone else's weight,
-goals and plan just by typing a name off the roster. So scan-in is two steps
-(`/auth/scan/lookup` confirms *who*, `/auth/scan` checks the PIN), PINs are
-scrypt-hashed exactly like staff passwords and never leave the server, and failed
-attempts are rate-limited to 20 a minute — successful scans are not counted, so a
-busy floor is never locked out. The token a scan mints still only reaches that
+**Member scan-in is a convenience gate, not a secret.** A member types their
+name, the kiosk resolves it (`/auth/scan/lookup`) and asks "is this you?" before
+`/auth/scan` opens the profile — the failure it defends against is a near-miss on
+the name, not an attacker. Lookups are rate-limited to 20 failures a minute so the
+endpoint cannot be used to sweep the roster (successful scans are not counted, so
+a busy floor is never locked out). The token a scan mints only reaches that
 member's own data: the API rejects cross-member reads and writes
 (`requireSelfOrStaff`), so a bug in the UI cannot leak someone else's log.
 
@@ -273,7 +278,7 @@ All routes are under `/api`. `Authorization: Bearer <token>` unless noted.
 | Method | Route | Auth | Purpose |
 | --- | --- | --- | --- |
 | `POST` | `/auth/scan/lookup` | public | Resolve a typed name to a member |
-| `POST` | `/auth/scan` | public | Scan in with name + 4-digit PIN |
+| `POST` | `/auth/scan` | public | Scan in with the confirmed member name |
 | `POST` | `/auth/staff/login` | public | Staff sign-in |
 | `GET` | `/auth/me` | any | Resolve the current identity |
 | `GET` | `/users` | staff | Roster with stats |

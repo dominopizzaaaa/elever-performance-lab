@@ -1,4 +1,3 @@
-import { hashPin } from '../lib/crypto.js';
 import { conflict, notFound } from '../lib/errors.js';
 import { createId, slugify } from '../lib/ids.js';
 import * as usersRepository from '../repositories/usersRepository.js';
@@ -6,14 +5,13 @@ import * as workoutsRepository from '../repositories/workoutsRepository.js';
 import { buildUserSummary } from './metricsService.js';
 
 /**
- * Strips secrets before a member ever reaches the wire. Every response goes
- * through here, so the PIN hash cannot leak from a route that forgot about it.
+ * The single place a stored member is turned into a wire shape. Every response
+ * goes through here, so anything added to the record later stays opt-in.
  * @param {any} user
  */
 export function toPublicUser(user) {
   if (!user) return null;
-  const { pinHash, pin, ...rest } = user;
-  return { ...rest, hasPin: Boolean(pinHash) };
+  return { ...user };
 }
 
 /**
@@ -66,12 +64,6 @@ export async function updateUser(id, patch) {
 
   const next = { ...patch };
 
-  // Staff-only: a PIN reset arrives as plaintext and is never stored that way.
-  if (typeof next.pin === 'string') {
-    next.pinHash = await hashPin(next.pin);
-    delete next.pin;
-  }
-
   if (typeof next.name === 'string') {
     const slug = slugify(next.name);
     const clash = (await usersRepository.listUsers()).find(
@@ -113,7 +105,6 @@ export async function createUser(input) {
     id: createId('usr'),
     name: input.name,
     slug,
-    pinHash: await hashPin(input.pin),
     memberNumber: `EPL-${String(Date.now()).slice(-4)}`,
     age: input.age,
     weightKg: input.weightKg,

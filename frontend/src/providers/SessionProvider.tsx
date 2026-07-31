@@ -20,8 +20,8 @@ interface SessionContextValue {
   token: string | null;
   /** True until the stored token has been checked on first paint. */
   isRestoring: boolean;
-  /** "Scan" a card: a typed name plus that member's PIN. Throws ApiError on either being wrong. */
-  scanIn: (name: string, pin: string) => Promise<User>;
+  /** "Scan" a card: a confirmed member name. Throws ApiError if it matches nobody. */
+  scanIn: (name: string) => Promise<User>;
   scanOut: () => void;
   /** Replaces the cached member after a profile edit. */
   setUser: (user: User) => void;
@@ -70,8 +70,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const scanIn = useCallback(async (name: string, pin: string) => {
-    const result = await api.scan(name, pin);
+  const scanIn = useCallback(async (name: string) => {
+    const result = await api.scan(name);
     writeToken('member', result.token);
     setToken(result.token);
     setUserState(result.user);

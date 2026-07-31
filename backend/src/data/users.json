@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-07-30T15:55:35.636Z",
+  "updatedAt": "2026-07-31T00:56:57.016Z",
   "users": [
     {
       "id": "usr_dominic",
@@ -18,7 +18,7 @@
       "accentColor": "cyan",
       "tagline": "Hypertrophy block · chasing a 140 kg bench",
       "goals": {
-        "weeklySessions": 5,
+        "weeklySessions": 4,
         "weeklyVolumeKg": 62000,
         "targetWeightKg": 82,
         "focus": "Lean mass"
@@ -55,12 +55,12 @@
         "phase": "Accumulation — week 5 of 8",
         "focus": "Hypertrophy",
         "startedAt": "2026-06-29",
-        "sessionsPerWeek": 5,
+        "sessionsPerWeek": 4,
         "notes": "Two progressive sets to RPE 9, back off 10% on the third. Add 2.5 kg once all reps hit.",
         "days": [
           {
-            "key": "push-a",
-            "label": "Push A",
+            "key": "push",
+            "label": "Push",
             "focus": "Push",
             "weekdays": [
               1
@@ -74,11 +74,11 @@
                 "targetWeightKg": 100
               },
               {
-                "name": "Seated Dumbbell Press",
+                "name": "Overhead Press",
                 "muscleGroup": "shoulders",
-                "targetSets": 3,
-                "targetReps": 10,
-                "targetWeightKg": 30
+                "targetSets": 4,
+                "targetReps": 6,
+                "targetWeightKg": 60
               },
               {
                 "name": "Incline Dumbbell Press",
@@ -104,8 +104,8 @@
             ]
           },
           {
-            "key": "pull-a",
-            "label": "Pull A",
+            "key": "pull",
+            "label": "Pull",
             "focus": "Pull",
             "weekdays": [
               2
@@ -126,11 +126,11 @@
                 "targetWeightKg": 10
               },
               {
-                "name": "Seated Cable Row",
+                "name": "Barbell Row",
                 "muscleGroup": "back",
-                "targetSets": 3,
-                "targetReps": 12,
-                "targetWeightKg": 70
+                "targetSets": 4,
+                "targetReps": 8,
+                "targetWeightKg": 90
               },
               {
                 "name": "Incline Dumbbell Curl",
@@ -194,86 +194,54 @@
             ]
           },
           {
-            "key": "push-b",
-            "label": "Push B",
-            "focus": "Push",
+            "key": "badminton",
+            "label": "Badminton Specific",
+            "focus": "Badminton",
             "weekdays": [
               5
             ],
             "exercises": [
               {
-                "name": "Overhead Press",
-                "muscleGroup": "shoulders",
+                "name": "Split-Step Drop Jump",
+                "muscleGroup": "quads",
                 "targetSets": 4,
                 "targetReps": 6,
-                "targetWeightKg": 60
+                "targetWeightKg": 0
               },
               {
-                "name": "Weighted Dip",
-                "muscleGroup": "chest",
+                "name": "Net Lunge",
+                "muscleGroup": "quads",
                 "targetSets": 3,
                 "targetReps": 10,
-                "targetWeightKg": 20
+                "targetWeightKg": 16
               },
               {
-                "name": "Cable Fly",
-                "muscleGroup": "chest",
-                "targetSets": 3,
-                "targetReps": 14,
-                "targetWeightKg": 22
-              },
-              {
-                "name": "Skull Crusher",
-                "muscleGroup": "triceps",
-                "targetSets": 3,
-                "targetReps": 12,
-                "targetWeightKg": 40
-              }
-            ]
-          },
-          {
-            "key": "pull-b",
-            "label": "Pull B",
-            "focus": "Pull",
-            "weekdays": [
-              6
-            ],
-            "exercises": [
-              {
-                "name": "Barbell Row",
-                "muscleGroup": "back",
+                "name": "Overhead Med-Ball Smash Throw",
+                "muscleGroup": "shoulders",
                 "targetSets": 4,
                 "targetReps": 8,
-                "targetWeightKg": 90
+                "targetWeightKg": 5
               },
               {
-                "name": "Lat Pulldown",
-                "muscleGroup": "back",
-                "targetSets": 3,
-                "targetReps": 12,
-                "targetWeightKg": 75
-              },
-              {
-                "name": "Hammer Curl",
-                "muscleGroup": "biceps",
-                "targetSets": 3,
-                "targetReps": 12,
-                "targetWeightKg": 18
-              },
-              {
-                "name": "Cable Crunch",
-                "muscleGroup": "core",
+                "name": "Wrist Pronation",
+                "muscleGroup": "forearms",
                 "targetSets": 3,
                 "targetReps": 15,
-                "targetWeightKg": 40
+                "targetWeightKg": 4
+              },
+              {
+                "name": "Shadow Footwork Drill",
+                "muscleGroup": "conditioning",
+                "targetSets": 6,
+                "targetReps": 1,
+                "targetWeightKg": 0
               }
             ]
           }
         ]
       },
-      "createdAt": "2026-07-30T13:13:40.366Z",
-      "updatedAt": "2026-07-30T13:13:40.366Z",
-      "pinHash": "scrypt$16384$8$1$fouSX/d9LOFLCkawU67Vwg==$VfpBXHwMljRZJDkwtBhjrzGK9zxui3S2GFT913+EPInn6Oc9nB+Vt5vZxNnfKjF8PT6vshmHXhdMSdyx+4G6Bw=="
+      "createdAt": "2026-07-31T00:52:43.093Z",
+      "updatedAt": "2026-07-31T00:52:43.093Z"
     },
     {
       "id": "usr_kean_hean",
@@ -325,13 +293,13 @@
           "exercise": "Lat Pulldown",
           "weightKg": 70,
           "reps": 10,
-          "achievedAt": "2026-07-30",
+          "achievedAt": "2026-07-31",
           "estimatedOneRepMax": 93.3
         }
       ],
       "currentPlan": {
-        "id": "plan_kean_upper_lower",
-        "name": "Voltage Strength · Upper / Lower",
+        "id": "plan_kean_strength",
+        "name": "Voltage Strength · Push / Pull / Legs",
         "phase": "Intensification — week 3 of 6",
         "focus": "Maximal strength",
         "startedAt": "2026-07-13",
@@ -339,11 +307,87 @@
         "notes": "Top single at RPE 8, then back-off doubles at 88%. Stop at the first rep that slows.",
         "days": [
           {
-            "key": "lower-a",
-            "label": "Lower A · Squat",
-            "focus": "Lower",
+            "key": "push",
+            "label": "Push",
+            "focus": "Push",
             "weekdays": [
               1
+            ],
+            "exercises": [
+              {
+                "name": "Barbell Bench Press",
+                "muscleGroup": "chest",
+                "targetSets": 5,
+                "targetReps": 3,
+                "targetWeightKg": 90
+              },
+              {
+                "name": "Overhead Press",
+                "muscleGroup": "shoulders",
+                "targetSets": 3,
+                "targetReps": 6,
+                "targetWeightKg": 55
+              },
+              {
+                "name": "Incline Dumbbell Press",
+                "muscleGroup": "chest",
+                "targetSets": 4,
+                "targetReps": 8,
+                "targetWeightKg": 30
+              },
+              {
+                "name": "Cable Triceps Pushdown",
+                "muscleGroup": "triceps",
+                "targetSets": 3,
+                "targetReps": 12,
+                "targetWeightKg": 30
+              }
+            ]
+          },
+          {
+            "key": "pull",
+            "label": "Pull",
+            "focus": "Pull",
+            "weekdays": [
+              2
+            ],
+            "exercises": [
+              {
+                "name": "Deadlift",
+                "muscleGroup": "back",
+                "targetSets": 5,
+                "targetReps": 2,
+                "targetWeightKg": 170
+              },
+              {
+                "name": "Pull-Up",
+                "muscleGroup": "back",
+                "targetSets": 5,
+                "targetReps": 5,
+                "targetWeightKg": 20
+              },
+              {
+                "name": "Chest-Supported Row",
+                "muscleGroup": "back",
+                "targetSets": 3,
+                "targetReps": 10,
+                "targetWeightKg": 60
+              },
+              {
+                "name": "Barbell Curl",
+                "muscleGroup": "biceps",
+                "targetSets": 3,
+                "targetReps": 10,
+                "targetWeightKg": 35
+              }
+            ]
+          },
+          {
+            "key": "legs",
+            "label": "Legs",
+            "focus": "Legs",
+            "weekdays": [
+              4
             ],
             "exercises": [
               {
@@ -368,6 +412,13 @@
                 "targetWeightKg": 24
               },
               {
+                "name": "Standing Calf Raise",
+                "muscleGroup": "calves",
+                "targetSets": 3,
+                "targetReps": 12,
+                "targetWeightKg": 80
+              },
+              {
                 "name": "Weighted Plank",
                 "muscleGroup": "core",
                 "targetSets": 3,
@@ -377,139 +428,69 @@
             ]
           },
           {
-            "key": "upper-a",
-            "label": "Upper A · Bench",
-            "focus": "Upper",
-            "weekdays": [
-              2
-            ],
-            "exercises": [
-              {
-                "name": "Barbell Bench Press",
-                "muscleGroup": "chest",
-                "targetSets": 5,
-                "targetReps": 3,
-                "targetWeightKg": 90
-              },
-              {
-                "name": "Barbell Row",
-                "muscleGroup": "back",
-                "targetSets": 4,
-                "targetReps": 6,
-                "targetWeightKg": 85
-              },
-              {
-                "name": "Overhead Press",
-                "muscleGroup": "shoulders",
-                "targetSets": 3,
-                "targetReps": 6,
-                "targetWeightKg": 55
-              },
-              {
-                "name": "Cable Triceps Pushdown",
-                "muscleGroup": "triceps",
-                "targetSets": 3,
-                "targetReps": 12,
-                "targetWeightKg": 30
-              }
-            ]
-          },
-          {
-            "key": "lower-b",
-            "label": "Lower B · Deadlift",
-            "focus": "Lower",
-            "weekdays": [
-              4
-            ],
-            "exercises": [
-              {
-                "name": "Deadlift",
-                "muscleGroup": "back",
-                "targetSets": 5,
-                "targetReps": 2,
-                "targetWeightKg": 170
-              },
-              {
-                "name": "Front Squat",
-                "muscleGroup": "quads",
-                "targetSets": 3,
-                "targetReps": 5,
-                "targetWeightKg": 100
-              },
-              {
-                "name": "Seated Leg Curl",
-                "muscleGroup": "hamstrings",
-                "targetSets": 3,
-                "targetReps": 12,
-                "targetWeightKg": 55
-              },
-              {
-                "name": "Standing Calf Raise",
-                "muscleGroup": "calves",
-                "targetSets": 3,
-                "targetReps": 12,
-                "targetWeightKg": 80
-              }
-            ]
-          },
-          {
-            "key": "upper-b",
-            "label": "Upper B · Pull",
-            "focus": "Upper",
+            "key": "badminton",
+            "label": "Badminton Specific",
+            "focus": "Badminton",
             "weekdays": [
               6
             ],
             "exercises": [
               {
-                "name": "Pull-Up",
-                "muscleGroup": "back",
-                "targetSets": 5,
-                "targetReps": 5,
-                "targetWeightKg": 20
+                "name": "Split-Step Drop Jump",
+                "muscleGroup": "quads",
+                "targetSets": 4,
+                "targetReps": 6,
+                "targetWeightKg": 0
               },
               {
-                "name": "Incline Dumbbell Press",
-                "muscleGroup": "chest",
+                "name": "Net Lunge",
+                "muscleGroup": "quads",
+                "targetSets": 3,
+                "targetReps": 10,
+                "targetWeightKg": 14
+              },
+              {
+                "name": "Rotational Med-Ball Throw",
+                "muscleGroup": "core",
                 "targetSets": 4,
                 "targetReps": 8,
-                "targetWeightKg": 30
+                "targetWeightKg": 5
               },
               {
-                "name": "Chest-Supported Row",
-                "muscleGroup": "back",
+                "name": "Resisted Shoulder External Rotation",
+                "muscleGroup": "shoulders",
                 "targetSets": 3,
-                "targetReps": 10,
-                "targetWeightKg": 60
+                "targetReps": 15,
+                "targetWeightKg": 7.5
               },
               {
-                "name": "Barbell Curl",
-                "muscleGroup": "biceps",
-                "targetSets": 3,
-                "targetReps": 10,
-                "targetWeightKg": 35
+                "name": "Shadow Footwork Drill",
+                "muscleGroup": "conditioning",
+                "targetSets": 6,
+                "targetReps": 1,
+                "targetWeightKg": 0
               }
             ]
           }
         ]
       },
-      "createdAt": "2026-07-30T13:13:40.366Z",
-      "updatedAt": "2026-07-30T15:55:35.636Z",
-      "pinHash": "scrypt$16384$8$1$p6RjTMy4/MWTBZ5NBC0YWQ==$FO2dg+A3kgD3FUxscaT5MztBpAkNzYTvI5fp3GYqHH7i7x5kes5WJbjYGCMbUT2yYp+XTYx2QkroCZCsKZV6Kw==",
+      "createdAt": "2026-07-31T00:52:43.093Z",
+      "updatedAt": "2026-07-31T00:56:57.016Z",
       "weightHistory": [
         {
-          "date": "2026-07-30T15:38:09.238Z",
+          "date": "2026-07-31T00:52:48.142Z",
           "weightKg": 71.60000000000001
         },
         {
-          "date": "2026-07-30T15:38:09.370Z",
+          "date": "2026-07-31T00:52:48.251Z",
           "weightKg": 71.2
         },
         {
-          "date": "2026-07-30T15:55:35.462Z",
+          "date": "2026-07-31T00:56:56.911Z",
           "weightKg": 71.60000000000001
         },
         {
-          "date": "2026-07-30T15:55:35.636Z",
+          "date": "2026-07-31T00:56:57.016Z",
           "weightKg": 71.2
         }
       ]
@@ -564,57 +545,19 @@
       ],
       "currentPlan": {
         "id": "plan_chin_an_power",
-        "name": "Kinetic Power · Athletic Full Body",
+        "name": "Kinetic Power · Push / Pull / Legs",
         "phase": "Realisation — week 2 of 4",
         "focus": "Explosive power",
         "startedAt": "2026-07-20",
         "sessionsPerWeek": 4,
-        "notes": "Quality over grind: stop the power work the moment bar speed drops. Conditioning stays sub-threshold.",
+        "notes": "Quality over grind: stop the power work the moment bar speed drops. Court work stays sub-threshold.",
         "days": [
           {
-            "key": "power-a",
-            "label": "Power A · Lower",
-            "focus": "Power",
+            "key": "push",
+            "label": "Push",
+            "focus": "Push",
             "weekdays": [
               1
-            ],
-            "exercises": [
-              {
-                "name": "Power Clean",
-                "muscleGroup": "back",
-                "targetSets": 6,
-                "targetReps": 2,
-                "targetWeightKg": 85
-              },
-              {
-                "name": "Back Squat",
-                "muscleGroup": "quads",
-                "targetSets": 4,
-                "targetReps": 4,
-                "targetWeightKg": 140
-              },
-              {
-                "name": "Box Jump",
-                "muscleGroup": "quads",
-                "targetSets": 4,
-                "targetReps": 3,
-                "targetWeightKg": 0
-              },
-              {
-                "name": "Hanging Leg Raise",
-                "muscleGroup": "core",
-                "targetSets": 3,
-                "targetReps": 12,
-                "targetWeightKg": 0
-              }
-            ]
-          },
-          {
-            "key": "strength-a",
-            "label": "Strength A · Upper",
-            "focus": "Upper",
-            "weekdays": [
-              3
             ],
             "exercises": [
               {
@@ -625,18 +568,18 @@
                 "targetWeightKg": 95
               },
               {
-                "name": "Pull-Up",
-                "muscleGroup": "back",
-                "targetSets": 4,
-                "targetReps": 8,
-                "targetWeightKg": 12.5
-              },
-              {
                 "name": "Seated Dumbbell Press",
                 "muscleGroup": "shoulders",
                 "targetSets": 3,
                 "targetReps": 8,
                 "targetWeightKg": 32
+              },
+              {
+                "name": "Weighted Dip",
+                "muscleGroup": "chest",
+                "targetSets": 3,
+                "targetReps": 10,
+                "targetWeightKg": 20
               },
               {
                 "name": "Medicine Ball Slam",
@@ -648,13 +591,58 @@
             ]
           },
           {
-            "key": "power-b",
-            "label": "Power B · Posterior",
-            "focus": "Power",
+            "key": "pull",
+            "label": "Pull",
+            "focus": "Pull",
+            "weekdays": [
+              3
+            ],
+            "exercises": [
+              {
+                "name": "Power Clean",
+                "muscleGroup": "back",
+                "targetSets": 6,
+                "targetReps": 2,
+                "targetWeightKg": 85
+              },
+              {
+                "name": "Pull-Up",
+                "muscleGroup": "back",
+                "targetSets": 4,
+                "targetReps": 8,
+                "targetWeightKg": 12.5
+              },
+              {
+                "name": "Chest-Supported Row",
+                "muscleGroup": "back",
+                "targetSets": 3,
+                "targetReps": 10,
+                "targetWeightKg": 60
+              },
+              {
+                "name": "Farmer Carry",
+                "muscleGroup": "forearms",
+                "targetSets": 3,
+                "targetReps": 1,
+                "targetWeightKg": 40
+              }
+            ]
+          },
+          {
+            "key": "legs",
+            "label": "Legs",
+            "focus": "Legs",
             "weekdays": [
               5
             ],
             "exercises": [
+              {
+                "name": "Back Squat",
+                "muscleGroup": "quads",
+                "targetSets": 4,
+                "targetReps": 4,
+                "targetWeightKg": 140
+              },
               {
                 "name": "Trap Bar Jump",
                 "muscleGroup": "quads",
@@ -677,50 +665,63 @@
                 "targetWeightKg": 24
               },
               {
-                "name": "Farmer Carry",
-                "muscleGroup": "forearms",
-                "targetSets": 3,
-                "targetReps": 1,
-                "targetWeightKg": 40
-              }
-            ]
-          },
-          {
-            "key": "engine",
-            "label": "Engine · Conditioning",
-            "focus": "Conditioning",
-            "weekdays": [
-              6
-            ],
-            "exercises": [
-              {
-                "name": "Sled Push",
-                "muscleGroup": "conditioning",
-                "targetSets": 6,
-                "targetReps": 1,
-                "targetWeightKg": 80
-              },
-              {
-                "name": "Assault Bike Intervals",
-                "muscleGroup": "conditioning",
-                "targetSets": 8,
-                "targetReps": 1,
-                "targetWeightKg": 0
-              },
-              {
-                "name": "Ab Wheel Rollout",
+                "name": "Hanging Leg Raise",
                 "muscleGroup": "core",
                 "targetSets": 3,
                 "targetReps": 12,
                 "targetWeightKg": 0
               }
             ]
+          },
+          {
+            "key": "badminton",
+            "label": "Badminton Specific",
+            "focus": "Badminton",
+            "weekdays": [
+              6
+            ],
+            "exercises": [
+              {
+                "name": "Split-Step Drop Jump",
+                "muscleGroup": "quads",
+                "targetSets": 5,
+                "targetReps": 5,
+                "targetWeightKg": 0
+              },
+              {
+                "name": "Lateral Court Bound",
+                "muscleGroup": "glutes",
+                "targetSets": 4,
+                "targetReps": 8,
+                "targetWeightKg": 0
+              },
+              {
+                "name": "Net Lunge",
+                "muscleGroup": "quads",
+                "targetSets": 3,
+                "targetReps": 10,
+                "targetWeightKg": 20
+              },
+              {
+                "name": "Overhead Med-Ball Smash Throw",
+                "muscleGroup": "shoulders",
+                "targetSets": 4,
+                "targetReps": 8,
+                "targetWeightKg": 6
+              },
+              {
+                "name": "Court Sprint Intervals",
+                "muscleGroup": "conditioning",
+                "targetSets": 8,
+                "targetReps": 1,
+                "targetWeightKg": 0
+              }
+            ]
           }
         ]
       },
-      "createdAt": "2026-07-30T13:13:40.366Z",
-      "updatedAt": "2026-07-30T13:13:40.366Z",
-      "pinHash": "scrypt$16384$8$1$aRMMmik66PBQ9aWOSU7q5A==$VW/13qFcNTT5yIDJDFd9z6ew2uplcCg9gQ7KWpZ/1X+BNujVMmfX5yNz4bcUoeclTsMSI8iiy3xQ3nOhnORSiA=="
+      "createdAt": "2026-07-31T00:52:43.093Z",
+      "updatedAt": "2026-07-31T00:52:43.093Z"
     }
   ]
 }

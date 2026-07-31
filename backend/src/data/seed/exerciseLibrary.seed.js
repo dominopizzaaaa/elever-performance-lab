@@ -55,6 +55,17 @@ export const EXERCISE_LIBRARY = [
   { name: 'Box Jump', muscleGroup: 'quads', equipment: 'bodyweight', pattern: 'jump', videoAnalysis: true },
   { name: 'Medicine Ball Slam', muscleGroup: 'core', equipment: 'other', pattern: 'throw' },
 
+  // Badminton specific — court patterns loaded on the gym floor
+  { name: 'Split-Step Drop Jump', muscleGroup: 'quads', equipment: 'bodyweight', pattern: 'jump', videoAnalysis: true },
+  { name: 'Lateral Court Bound', muscleGroup: 'glutes', equipment: 'bodyweight', pattern: 'jump', videoAnalysis: true },
+  { name: 'Net Lunge', muscleGroup: 'quads', equipment: 'dumbbell', pattern: 'lunge', videoAnalysis: true },
+  { name: 'Overhead Med-Ball Smash Throw', muscleGroup: 'shoulders', equipment: 'other', pattern: 'throw' },
+  { name: 'Rotational Med-Ball Throw', muscleGroup: 'core', equipment: 'other', pattern: 'throw' },
+  { name: 'Wrist Pronation', muscleGroup: 'forearms', equipment: 'dumbbell', pattern: 'isolation' },
+  { name: 'Resisted Shoulder External Rotation', muscleGroup: 'shoulders', equipment: 'cable', pattern: 'isolation' },
+  { name: 'Shadow Footwork Drill', muscleGroup: 'conditioning', equipment: 'bodyweight', pattern: 'footwork' },
+  { name: 'Court Sprint Intervals', muscleGroup: 'conditioning', equipment: 'bodyweight', pattern: 'conditioning' },
+
   // Core / conditioning
   { name: 'Hanging Leg Raise', muscleGroup: 'core', equipment: 'bodyweight', pattern: 'isolation' },
   { name: 'Cable Crunch', muscleGroup: 'core', equipment: 'cable', pattern: 'isolation' },

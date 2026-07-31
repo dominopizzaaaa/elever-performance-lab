@@ -10,7 +10,7 @@
 import fs from 'node:fs/promises';
 import { env } from '../src/config/env.js';
 import { clearCache, exists, writeJson } from '../src/lib/jsonStore.js';
-import { hashPassword, hashPin } from '../src/lib/crypto.js';
+import { hashPassword } from '../src/lib/crypto.js';
 import { todayKey } from '../src/lib/dates.js';
 import { USERS_SEED } from '../src/data/seed/users.seed.js';
 import { ADMINS_SEED } from '../src/data/seed/admins.seed.js';
@@ -40,18 +40,10 @@ async function main() {
   const now = new Date().toISOString();
   const today = todayKey();
 
-  await seedFile('users.json', async () => ({
+  await seedFile('users.json', () => ({
     version: 1,
     updatedAt: now,
-    users: await Promise.all(
-      // The plaintext `pin` is dropped here — only the scrypt hash is persisted.
-      USERS_SEED.map(async ({ pin, ...user }) => ({
-        ...user,
-        pinHash: await hashPin(pin),
-        createdAt: now,
-        updatedAt: now,
-      })),
-    ),
+    users: USERS_SEED.map((user) => ({ ...user, createdAt: now, updatedAt: now })),
   }));
 
   await seedFile('workouts.json', () => ({
@@ -93,9 +85,9 @@ async function main() {
   for (const admin of ADMINS_SEED) {
     console.log(`  ${admin.username} / ${admin.password}`);
   }
-  console.log('\nDemo member kiosk PINs:');
+  console.log('\nDemo members (type the name to scan in):');
   for (const user of USERS_SEED) {
-    console.log(`  ${user.name} · ${user.pin}`);
+    console.log(`  ${user.name}`);
   }
   console.log('');
 }

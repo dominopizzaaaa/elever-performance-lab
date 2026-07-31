@@ -92,11 +92,11 @@ export const api = {
   lookupMember: (name: string) =>
     request<{ member: MemberIdentity }>('/auth/scan/lookup', { method: 'POST', body: { name } }),
 
-  /** Step 2: simulated card scan, gated on the member's 4-digit kiosk PIN. */
-  scan: (name: string, pin: string) =>
+  /** Step 2: simulated card scan, once the member has confirmed the name is theirs. */
+  scan: (name: string) =>
     request<{ token: string; expiresAt: string; user: User }>('/auth/scan', {
       method: 'POST',
-      body: { name, pin },
+      body: { name },
     }),
 
   staffLogin: (username: string, password: string) =>
@@ -261,8 +261,6 @@ export const api = {
     createMember: (
       body: {
         name: string;
-        /** 4 digits — the member types this to scan in at the kiosk. */
-        pin: string;
         age: number;
         weightKg: number;
         heightCm?: number;

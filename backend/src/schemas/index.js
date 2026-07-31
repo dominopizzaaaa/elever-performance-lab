@@ -28,11 +28,6 @@ const muscleGroup = z.enum(/** @type {[string, ...string[]]} */ (MUSCLE_GROUP_KE
 
 const gender = z.enum(['male', 'female']);
 
-/** Kiosk PIN: exactly four digits, kept as a string so leading zeros survive. */
-const pin = z
-  .string({ required_error: 'Enter your 4-digit PIN' })
-  .regex(/^\d{4}$/, 'Your PIN is 4 digits');
-
 const memberName = z
   .string({ required_error: 'Enter your name to scan in' })
   .trim()
@@ -42,8 +37,8 @@ const memberName = z
 /** Step 1 of scan-in: resolve a typed name so the kiosk can confirm who it is. */
 export const scanLookupSchema = z.object({ name: memberName });
 
-/** Step 2: the same name plus the member's PIN. */
-export const scanSchema = z.object({ name: memberName, pin });
+/** Step 2: the member confirms the name is theirs and the kiosk signs them in. */
+export const scanSchema = z.object({ name: memberName });
 
 export const adminLoginSchema = z.object({
   username: z.string().trim().min(1, 'Username is required').max(60),
@@ -77,18 +72,11 @@ export const updateUserSchema = z
   .strict()
   .refine((value) => Object.keys(value).length > 0, notEmpty);
 
-/**
- * Staff may additionally reset a member's kiosk PIN. Members cannot — that path
- * shares `updateUserSchema`, which rejects the field outright.
- */
-export const adminUpdateUserSchema = z
-  .object({ ...userPatchShape, pin: pin.optional() })
-  .strict()
-  .refine((value) => Object.keys(value).length > 0, notEmpty);
+/** Staff edit members through the same shape members use on themselves. */
+export const adminUpdateUserSchema = updateUserSchema;
 
 export const createUserSchema = z.object({
   name: z.string().trim().min(2, 'Name is required').max(60),
-  pin,
   age: z.number().int().min(10).max(100),
   weightKg,
   heightCm: z.number().min(80).max(260).optional(),

@@ -9,10 +9,6 @@
 import assert from 'node:assert/strict';
 import { createApp } from '../src/app.js';
 import { todayKey } from '../src/lib/dates.js';
-import { USERS_SEED } from '../src/data/seed/users.seed.js';
-
-/** Kiosk PINs by member name, so the scan tests stay in step with the seed. */
-const SEED_PINS = Object.fromEntries(USERS_SEED.map((user) => [user.name, user.pin]));
 
 let passed = 0;
 let failed = 0;
@@ -72,42 +68,26 @@ async function main() {
       assert.equal(status, 200, `expected 200, got ${status}`);
       assert.equal(body.member.name, 'Kean Hean');
       assert.ok(body.member.memberNumber, 'kiosk needs the member number to confirm identity');
-      assert.equal(body.member.pinHash, undefined, 'lookup must not leak the PIN hash');
     });
 
-    await check('POST /api/auth/scan signs in "kean hean" with the right PIN', async () => {
+    await check('POST /api/auth/scan signs in "kean hean" regardless of casing', async () => {
       const { status, body } = await request('POST', '/api/auth/scan', {
-        body: { name: '  kean HEAN ', pin: SEED_PINS['Kean Hean'] },
+        body: { name: '  kean HEAN ' },
       });
       assert.equal(status, 200, `expected 200, got ${status}`);
       assert.equal(body.user.name, 'Kean Hean');
       assert.ok(body.token);
-      assert.equal(body.user.pinHash, undefined, 'the PIN hash must never reach the client');
       memberToken = body.token;
       memberId = body.user.id;
     });
 
-    await check('POST /api/auth/scan rejects the wrong PIN', async () => {
-      const { status, body } = await request('POST', '/api/auth/scan', {
-        body: { name: 'Kean Hean', pin: '0000' },
-      });
-      assert.equal(status, 401, 'a wrong PIN must not sign anyone in');
-      assert.ok(!body.token);
-    });
-
-    await check('POST /api/auth/scan requires a PIN at all', async () => {
-      const { status, body } = await request('POST', '/api/auth/scan', { body: { name: 'Kean Hean' } });
-      assert.equal(status, 400);
-      assert.equal(body.error.code, 'validation_failed');
-    });
-
     await check('POST /api/auth/scan rejects an unknown member', async () => {
-      const { status } = await request('POST', '/api/auth/scan', { body: { name: 'Nobody', pin: '1234' } });
+      const { status } = await request('POST', '/api/auth/scan', { body: { name: 'Nobody' } });
       assert.equal(status, 404);
     });
 
     await check('POST /api/auth/scan validates short input', async () => {
-      const { status, body } = await request('POST', '/api/auth/scan', { body: { name: 'x', pin: '1234' } });
+      const { status, body } = await request('POST', '/api/auth/scan', { body: { name: 'x' } });
       assert.equal(status, 400);
       assert.equal(body.error.code, 'validation_failed');
     });
@@ -374,13 +354,13 @@ async function main() {
     await check('admin can create and delete a member', async () => {
       const created = await request('POST', '/api/admin/members', {
         token: adminToken,
-        body: { name: 'Smoke Test Member', pin: '1234', age: 30, weightKg: 70 },
+        body: { name: 'Smoke Test Member', age: 30, weightKg: 70 },
       });
       assert.equal(created.status, 201);
 
       const duplicate = await request('POST', '/api/admin/members', {
         token: adminToken,
-        body: { name: 'smoke test member', pin: '1234', age: 30, weightKg: 70 },
+        body: { name: 'smoke test member', age: 30, weightKg: 70 },
       });
       assert.equal(duplicate.status, 409, 'duplicate names must be rejected');
 

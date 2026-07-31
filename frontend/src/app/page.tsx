@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { KioskShell } from '@/components/layout/KioskShell';
 import { Wordmark } from '@/components/layout/Wordmark';
-import { PinPad } from '@/components/auth/PinPad';
+import { ConfirmMember } from '@/components/auth/ConfirmMember';
 import { NeonButton } from '@/components/ui/NeonButton';
 import { Panel } from '@/components/ui/Panel';
 import { useSession } from '@/providers/SessionProvider';
@@ -43,13 +43,12 @@ export default function LandingPage() {
   const [error, setError] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   /**
-   * Scan-in is two steps: resolve the typed name, then confirm identity and
-   * unlock with a PIN. Holding the resolved member here is what lets the second
-   * screen say whose profile is about to open.
+   * Scan-in is two steps: resolve the typed name, then confirm it is the right
+   * person. Holding the resolved member here is what lets the second screen say
+   * whose profile is about to open.
    */
   const [pending, setPending] = useState<MemberIdentity | null>(null);
-  const [pinError, setPinError] = useState<string | null>(null);
-  const [pinAttempt, setPinAttempt] = useState(0);
+  const [confirmError, setConfirmError] = useState<string | null>(null);
 
   // Already scanned in (e.g. after a refresh) — go straight to the dashboard.
   useEffect(() => {
@@ -73,8 +72,7 @@ export default function LandingPage() {
     setError(null);
     try {
       const { member } = await api.lookupMember(trimmed);
-      setPinError(null);
-      setPinAttempt((count) => count + 1);
+      setConfirmError(null);
       setPending(member);
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : 'Could not reach the reader. Try again.');
@@ -84,27 +82,28 @@ export default function LandingPage() {
     }
   }
 
-  /** Step 2 — prove it. */
-  async function handlePin(pin: string) {
+  /** Step 2 — is that you? */
+  async function handleConfirm() {
     if (!pending) return;
 
     setIsScanning(true);
-    setPinError(null);
+    setConfirmError(null);
     try {
-      const member = await scanIn(pending.name, pin);
+      const member = await scanIn(pending.name);
       toast.success(`Welcome back, ${member.name}`, member.tagline);
       router.push('/dashboard');
     } catch (caught) {
-      setPinError(caught instanceof ApiError ? caught.message : 'Could not reach the reader. Try again.');
-      setPinAttempt((count) => count + 1);
+      setConfirmError(
+        caught instanceof ApiError ? caught.message : 'Could not reach the reader. Try again.',
+      );
     } finally {
       setIsScanning(false);
     }
   }
 
-  function cancelPin() {
+  function cancelConfirm() {
     setPending(null);
-    setPinError(null);
+    setConfirmError(null);
   }
 
   return (
@@ -149,13 +148,12 @@ export default function LandingPage() {
           />
 
           {pending ? (
-            <PinPad
+            <ConfirmMember
               member={pending}
-              onSubmit={(pin) => void handlePin(pin)}
-              onCancel={cancelPin}
-              isVerifying={isScanning}
-              error={pinError}
-              clearSignal={pinAttempt}
+              onConfirm={() => void handleConfirm()}
+              onCancel={cancelConfirm}
+              isOpening={isScanning}
+              error={confirmError}
             />
           ) : (
             <div className="relative">
@@ -233,7 +231,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <p className="mt-3 text-center text-xs text-white/25">
-                  Each member unlocks with their own 4-digit PIN.
+                  Tap a name, confirm it&apos;s you, and your profile opens.
                 </p>
               </div>
             </div>
